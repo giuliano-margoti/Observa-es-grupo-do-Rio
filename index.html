@@ -3,44 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendário de Observações</title>
+    <title>Calendário de Observações - Grupo do Rio</title>
     <style>
         :root {
             --google-blue: #1a73e8;
             --gray-line: #dadce0;
             --text-main: #3c4043;
+            --event-bg: #e8f0fe;
+            --event-text: #1967d2;
         }
 
-        body { font-family: 'Roboto', Arial, sans-serif; color: var(--text-main); display: flex; flex-direction: column; align-items: center; background-color: #fff; margin: 0; padding: 20px; }
+        body { 
+            font-family: 'Roboto', Arial, sans-serif; 
+            color: var(--text-main); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            background-color: #fff; 
+            margin: 0; 
+            padding: 20px; 
+        }
 
-        header { width: 100%; max-width: 800px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        header { 
+            width: 100%; 
+            max-width: 900px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 20px; 
+            border-bottom: 2px solid var(--google-blue);
+            padding-bottom: 10px;
+        }
 
-        .calendar-container { width: 100%; max-width: 800px; border: 1px solid var(--gray-line); border-radius: 8px; overflow: hidden; }
+        .calendar-container { 
+            width: 100%; 
+            max-width: 900px; 
+            border: 1px solid var(--gray-line); 
+            border-radius: 8px; 
+            overflow: hidden; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
 
-        .calendar-header { display: grid; grid-template-columns: repeat(7, 1fr); background: #fff; border-bottom: 1px solid var(--gray-line); }
+        .calendar-header { 
+            display: grid; 
+            grid-template-columns: repeat(7, 1fr); 
+            background: #f8f9fa; 
+            border-bottom: 1px solid var(--gray-line); 
+        }
 
-        .day-label { padding: 10px; text-align: center; font-size: 11px; font-weight: 500; color: #70757a; text-transform: uppercase; }
+        .day-label { 
+            padding: 10px; 
+            text-align: center; 
+            font-size: 12px; 
+            font-weight: 500; 
+            color: #70757a; 
+            text-transform: uppercase; 
+        }
 
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+        .calendar-grid { 
+            display: grid; 
+            grid-template-columns: repeat(7, 1fr); 
+        }
 
-        .calendar-day { min-height: 100px; padding: 8px; border-right: 1px solid var(--gray-line); border-bottom: 1px solid var(--gray-line); position: relative; cursor: pointer; transition: background 0.2s; }
+        .calendar-day { 
+            min-height: 120px; 
+            padding: 5px; 
+            border-right: 1px solid var(--gray-line); 
+            border-bottom: 1px solid var(--gray-line); 
+            background: #fff;
+        }
 
         .calendar-day:nth-child(7n) { border-right: none; }
 
-        .calendar-day:hover { background-color: #f8f9fa; }
+        .day-number { 
+            font-size: 12px; 
+            font-weight: 500; 
+            width: 26px; 
+            height: 26px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            margin-bottom: 5px;
+        }
 
-        .day-number { font-size: 12px; font-weight: 500; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; margin-bottom: 4px; }
+        .today .day-number { 
+            background-color: var(--google-blue); 
+            color: white; 
+            border-radius: 50%; 
+        }
 
-        .today .day-number { background-color: var(--google-blue); color: white; border-radius: 50%; }
+        /* Estilo do link da observação */
+        .event-link { 
+            display: block;
+            background-color: var(--event-bg); 
+            color: var(--event-text); 
+            font-size: 12px; 
+            font-weight: 500;
+            padding: 4px 8px; 
+            border-radius: 4px; 
+            margin-top: 3px; 
+            text-decoration: none;
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis;
+            transition: brightness 0.2s;
+        }
 
-        .event { background-color: var(--google-blue); color: white; font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-top: 4px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .event-link:hover {
+            filter: brightness(0.9);
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <h2 id="monthDisplay">Março 2026</h2>
-        <div style="color: #5f6368;">Observatório OPD / SOAR</div>
+        <h2 id="monthDisplay">Carregando...</h2>
+        <div style="font-weight: bold; color: var(--google-blue);">Observações - Grupo do Rio</div>
     </header>
 
     <div class="calendar-container">
@@ -48,11 +127,19 @@
             <div class="day-label">Dom</div><div class="day-label">Seg</div><div class="day-label">Ter</div>
             <div class="day-label">Qua</div><div class="day-label">Qui</div><div class="day-label">Sex</div><div class="day-label">Sáb</div>
         </div>
-        <div class="calendar-grid" id="calendarGrid">
-            </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
     </div>
 
     <script>
+        // --- 1. CONFIGURAÇÃO DE EVENTOS ---
+        // Adicione aqui suas observações (Dia: { nome, link })
+        const eventos = {
+            15: { nome: "🔭 Obs. SOAR", link: "observacoes/soar.html" },
+            20: { nome: "🌌 Obs. OPD", link: "observacoes/opd.html" },
+            25: { nome: "📅 Reunião Grupo", link: "observacoes/reuniao.html" }
+        };
+
+        // --- 2. LÓGICA DO CALENDÁRIO ---
         const grid = document.getElementById('calendarGrid');
         const monthDisplay = document.getElementById('monthDisplay');
         
@@ -63,30 +150,34 @@
         const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
         monthDisplay.innerText = `${monthNames[month]} ${year}`;
 
-        // Primeiro dia do mês e total de dias
         const firstDay = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-        // Espaços vazios antes do dia 1
+        // Criar espaços vazios para alinhar o primeiro dia da semana
         for (let i = 0; i < firstDay; i++) {
             const emptyDiv = document.createElement('div');
             emptyDiv.classList.add('calendar-day');
             grid.appendChild(emptyDiv);
         }
 
-        // Criar os dias
+        // Criar os dias do mês
         for (let day = 1; day <= daysInMonth; day++) {
             const dayDiv = document.createElement('div');
             dayDiv.classList.add('calendar-day');
-            if (day === now.getDate()) dayDiv.classList.add('today');
-
-            dayDiv.innerHTML = `<div class="day-number">${day}</div>`;
             
-            // Exemplo de como adicionar um evento via código:
-            if (day === 15) {
-                dayDiv.innerHTML += `<div class="event">Obs. SOAR</div>`;
+            // Verifica se é hoje
+            if (day === now.getDate() && month === now.getMonth()) {
+                dayDiv.classList.add('today');
             }
 
+            let htmlContent = `<div class="day-number">${day}</div>`;
+            
+            // Verifica se existe evento para este dia
+            if (eventos[day]) {
+                htmlContent += `<a href="${eventos[day].link}" class="event-link">${eventos[day].nome}</a>`;
+            }
+
+            dayDiv.innerHTML = htmlContent;
             grid.appendChild(dayDiv);
         }
     </script>
