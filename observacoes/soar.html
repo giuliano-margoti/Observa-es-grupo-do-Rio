@@ -1,15 +1,23 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8"><title>Detalhes SOAR</title>
-    <style>body{font-family:sans-serif;padding:50px;line-height:1.6;background:#f0f4f8} .card{max-width:600px;margin:auto;background:#white;padding:30px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);border-top:8px solid #1967d2}</style>
+    <meta charset="UTF-8"><title>Escala SOAR</title>
+    <style>body{font-family:sans-serif;padding:40px;background:#f0f4f8}.card{max-width:600px;margin:auto;background:white;padding:30px;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.1);border-top:8px solid #1967d2} .info{background:#e8f0fe;padding:15px;border-radius:8px;margin:20px 0} .btn{display:inline-block;padding:10px 20px;background:#1967d2;color:white;text-decoration:none;border-radius:5px}</style>
 </head>
 <body>
     <div class="card">
-        <h1>🌌 Telescópio SOAR</h1>
-        <p><strong>Status:</strong> Agendado</p>
-        <p><strong>Descrição:</strong> Observação de céu profundo e espectroscopia.</p>
-        <a href="../index.html">← Voltar ao Calendário</a>
+        <h1>🌌 Telescópio SOAR 4.1m</h1>
+        <div class="info">
+            <p><strong>PI (Principal Investigator):</strong> <span id="obs">---</span></p>
+            <p><strong>Programa:</strong> <span id="proj">---</span></p>
+        </div>
+        <p><i>Nota: Verifique o status da instrumentação no site oficial.</i></p>
+        <a href="../index.html" class="btn">← Voltar</a>
     </div>
+    <script>
+        const p = new URLSearchParams(window.location.search);
+        document.getElementById('obs').innerText = p.get('obs') || "Não definido";
+        document.getElementById('proj').innerText = p.get('proj') || "Ciência Ativa";
+    </script>
 </body>
 </html>
