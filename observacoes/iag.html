@@ -1,15 +1,23 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8"><title>Detalhes IAG</title>
-    <style>body{font-family:sans-serif;padding:50px;line-height:1.6;background:#fff9e6} .card{max-width:600px;margin:auto;background:white;padding:30px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);border-top:8px solid #b05a00}</style>
+    <meta charset="UTF-8"><title>Escala IAG</title>
+    <style>body{font-family:sans-serif;padding:40px;background:#fff9e6}.card{max-width:600px;margin:auto;background:white;padding:30px;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.1);border-top:8px solid #b05a00} .info{background:#fff3cd;padding:15px;border-radius:8px;margin:20px 0} .btn{display:inline-block;padding:10px 20px;background:#b05a00;color:white;text-decoration:none;border-radius:5px}</style>
 </head>
 <body>
     <div class="card">
         <h1>🏫 Telescópio IAG 60cm</h1>
-        <p><strong>Status:</strong> Reservado para Ensino</p>
-        <p><strong>Descrição:</strong> Práticas de astronomia observacional para graduação.</p>
-        <a href="../index.html">← Voltar ao Calendário</a>
+        <div class="info">
+            <p><strong>Responsável:</strong> <span id="obs">---</span></p>
+            <p><strong>Atividade:</strong> <span id="proj">---</span></p>
+        </div>
+        <p><i>Nota: Uso exclusivo para ensino e treinamento.</i></p>
+        <a href="../index.html" class="btn">← Voltar</a>
     </div>
+    <script>
+        const p = new URLSearchParams(window.location.search);
+        document.getElementById('obs').innerText = p.get('obs') || "Não definido";
+        document.getElementById('proj').innerText = p.get('proj') || "Ensino";
+    </script>
 </body>
 </html>
