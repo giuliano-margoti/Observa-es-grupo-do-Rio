@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendário de Observações - Grupo do Rio</title>
+    <title>Calendário Interativo - Grupo do Rio</title>
     <style>
         :root {
             --google-blue: #1a73e8;
@@ -35,6 +35,22 @@
             padding-bottom: 10px;
         }
 
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            background: #fff;
+            border: 1px solid var(--gray-line);
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        button:hover { background: #f1f3f4; }
+
         .calendar-container { 
             width: 100%; 
             max-width: 900px; 
@@ -52,74 +68,43 @@
         }
 
         .day-label { 
-            padding: 10px; 
-            text-align: center; 
-            font-size: 12px; 
-            font-weight: 500; 
-            color: #70757a; 
-            text-transform: uppercase; 
+            padding: 10px; text-align: center; font-size: 12px; font-weight: 500; color: #70757a; text-transform: uppercase; 
         }
 
         .calendar-grid { 
-            display: grid; 
-            grid-template-columns: repeat(7, 1fr); 
+            display: grid; grid-template-columns: repeat(7, 1fr); 
         }
 
         .calendar-day { 
-            min-height: 120px; 
-            padding: 5px; 
-            border-right: 1px solid var(--gray-line); 
-            border-bottom: 1px solid var(--gray-line); 
-            background: #fff;
+            min-height: 120px; padding: 5px; border-right: 1px solid var(--gray-line); border-bottom: 1px solid var(--gray-line); background: #fff;
         }
 
         .calendar-day:nth-child(7n) { border-right: none; }
 
         .day-number { 
-            font-size: 12px; 
-            font-weight: 500; 
-            width: 26px; 
-            height: 26px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            margin-bottom: 5px;
+            font-size: 12px; font-weight: 500; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-bottom: 5px;
         }
 
         .today .day-number { 
-            background-color: var(--google-blue); 
-            color: white; 
-            border-radius: 50%; 
+            background-color: var(--google-blue); color: white; border-radius: 50%; 
         }
 
-        /* Estilo do link da observação */
         .event-link { 
-            display: block;
-            background-color: var(--event-bg); 
-            color: var(--event-text); 
-            font-size: 12px; 
-            font-weight: 500;
-            padding: 4px 8px; 
-            border-radius: 4px; 
-            margin-top: 3px; 
-            text-decoration: none;
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis;
-            transition: brightness 0.2s;
+            display: block; background-color: var(--event-bg); color: var(--event-text); font-size: 12px; font-weight: 500; padding: 4px 8px; border-radius: 4px; margin-top: 3px; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
-        .event-link:hover {
-            filter: brightness(0.9);
-            text-decoration: underline;
-        }
+        .event-link:hover { filter: brightness(0.9); text-decoration: underline; }
     </style>
 </head>
 <body>
 
     <header>
-        <h2 id="monthDisplay">Carregando...</h2>
-        <div style="font-weight: bold; color: var(--google-blue);">Observações - Grupo do Rio</div>
+        <div class="nav-buttons">
+            <button onclick="changeMonth(-1)">&#10094; Anterior</button>
+            <button onclick="changeMonth(1)">Próximo &#10095;</button>
+        </div>
+        <h2 id="monthDisplay">Mês Ano</h2>
+        <div style="font-weight: bold; color: var(--google-blue);">Observações - Rio</div>
     </header>
 
     <div class="calendar-container">
@@ -132,54 +117,68 @@
 
     <script>
         // --- 1. CONFIGURAÇÃO DE EVENTOS ---
-        // Adicione aqui suas observações (Dia: { nome, link })
-        const eventos = {
-            15: { nome: "🔭 Obs. SOAR", link: "observacoes/soar.html" },
-            20: { nome: "🌌 Obs. OPD", link: "observacoes/opd.html" },
-            25: { nome: "📅 Reunião Grupo", link: "observacoes/reuniao.html" }
-        };
+        // Agora os eventos precisam ter o Mês (0-11) e o Ano para aparecerem no lugar certo
+        // Janeiro=0, Fevereiro=1, Março=2...
+        const eventos = [
+            { dia: 15, mes: 2, ano: 2026, nome: "🔭 Obs. SOAR", link: "observacoes/soar.html" },
+            { dia: 20, mes: 2, ano: 2026, nome: "🌌 Obs. OPD", link: "observacoes/opd.html" }
+        ];
 
-        // --- 2. LÓGICA DO CALENDÁRIO ---
-        const grid = document.getElementById('calendarGrid');
-        const monthDisplay = document.getElementById('monthDisplay');
-        
-        const now = new Date();
-        const month = now.getMonth();
-        const year = now.getFullYear();
+        let currentDate = new Date();
 
-        const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-        monthDisplay.innerText = `${monthNames[month]} ${year}`;
+        function renderCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            const monthDisplay = document.getElementById('monthDisplay');
+            grid.innerHTML = ""; // Limpa o calendário atual
 
-        const firstDay = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const month = currentDate.getMonth();
+            const year = currentDate.getFullYear();
 
-        // Criar espaços vazios para alinhar o primeiro dia da semana
-        for (let i = 0; i < firstDay; i++) {
-            const emptyDiv = document.createElement('div');
-            emptyDiv.classList.add('calendar-day');
-            grid.appendChild(emptyDiv);
-        }
+            const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+            monthDisplay.innerText = `${monthNames[month]} ${year}`;
 
-        // Criar os dias do mês
-        for (let day = 1; day <= daysInMonth; day++) {
-            const dayDiv = document.createElement('div');
-            dayDiv.classList.add('calendar-day');
-            
-            // Verifica se é hoje
-            if (day === now.getDate() && month === now.getMonth()) {
-                dayDiv.classList.add('today');
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            // Espaços vazios
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDiv = document.createElement('div');
+                emptyDiv.classList.add('calendar-day');
+                grid.appendChild(emptyDiv);
             }
 
-            let htmlContent = `<div class="day-number">${day}</div>`;
-            
-            // Verifica se existe evento para este dia
-            if (eventos[day]) {
-                htmlContent += `<a href="${eventos[day].link}" class="event-link">${eventos[day].nome}</a>`;
-            }
+            // Dias do mês
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.classList.add('calendar-day');
+                
+                const isToday = day === new Date().getDate() && 
+                                month === new Date().getMonth() && 
+                                year === new Date().getFullYear();
+                
+                if (isToday) dayDiv.classList.add('today');
 
-            dayDiv.innerHTML = htmlContent;
-            grid.appendChild(dayDiv);
+                let htmlContent = `<div class="day-number">${day}</div>`;
+                
+                // Busca eventos para este dia específico, mês e ano
+                const eventosDoDia = eventos.filter(e => e.dia === day && e.mes === month && e.ano === year);
+                
+                eventosDoDia.forEach(ev => {
+                    htmlContent += `<a href="${ev.link}" class="event-link">${ev.nome}</a>`;
+                });
+
+                dayDiv.innerHTML = htmlContent;
+                grid.appendChild(dayDiv);
+            }
         }
+
+        function changeMonth(offset) {
+            currentDate.setMonth(currentDate.getMonth() + offset);
+            renderCalendar();
+        }
+
+        // Inicializa o calendário na primeira carga
+        renderCalendar();
     </script>
 </body>
 </html>
