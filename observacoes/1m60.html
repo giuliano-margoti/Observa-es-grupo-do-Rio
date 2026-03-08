@@ -1,15 +1,23 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8"><title>Detalhes 1.6m</title>
-    <style>body{font-family:sans-serif;padding:50px;line-height:1.6;background:#f0f8f4} .card{max-width:600px;margin:auto;background:white;padding:30px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);border-top:8px solid #0d652d}</style>
+    <meta charset="UTF-8"><title>Escala 1.6m</title>
+    <style>body{font-family:sans-serif;padding:40px;background:#f0f8f4}.card{max-width:600px;margin:auto;background:white;padding:30px;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.1);border-top:8px solid #0d652d} .info{background:#eef7f2;padding:15px;border-radius:8px;margin:20px 0} .btn{display:inline-block;padding:10px 20px;background:#0d652d;color:white;text-decoration:none;border-radius:5px}</style>
 </head>
 <body>
     <div class="card">
-        <h1>🔭 Telescópio Perkin-Elmer 1.6m</h1>
-        <p><strong>Status:</strong> Em operação</p>
-        <p><strong>Descrição:</strong> Observação fotométrica de estrelas variáveis.</p>
-        <a href="../index.html">← Voltar ao Calendário</a>
+        <h1>🔭 Telescópio 1.6m (Perkin-Elmer)</h1>
+        <div class="info">
+            <p><strong>Observador:</strong> <span id="obs">---</span></p>
+            <p><strong>Projeto:</strong> <span id="proj">---</span></p>
+        </div>
+        <p><i>Nota: Verifique o nitrogênio líquido antes de iniciar a noite.</i></p>
+        <a href="../index.html" class="btn">← Voltar</a>
     </div>
+    <script>
+        const p = new URLSearchParams(window.location.search);
+        document.getElementById('obs').innerText = p.get('obs') || "Não definido";
+        document.getElementById('proj').innerText = p.get('proj') || "Geral";
+    </script>
 </body>
 </html>
