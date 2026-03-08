@@ -1,7 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Meu Site com Calendário</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background-color: #f4f4f9; }
+        .calendar { display: grid; grid-template-columns: repeat(7, 1fr); width: 300px; background: white; padding: 20px; border-radius: 10px; shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .day-name { font-weight: bold; color: #555; }
+        .day { padding: 10px; text-align: center; border: 1px solid #eee; }
+        .current { background-color: #007bff; color: white; border-radius: 5px; }
+        h2 { color: #333; }
+    </style>
+</head>
 <body>
-  <h1>Olá, Mundo! Meu site no GitHub está online.</h1>
-  <iframe src="https://calendar.google.com/calendar/embed?src=pt-br.brazilian%23holiday%40group.v.calendar.google.com&ctz=America%2FSao_Paulo" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+
+    <h2>Março 2026</h2>
+    
+    <div class="calendar">
+        <div class="day-name">Dom</div><div class="day-name">Seg</div><div class="day-name">Ter</div>
+        <div class="day-name">Qua</div><div class="day-name">Qui</div><div class="day-name">Sex</div><div class="day-name">Sáb</div>
+        
+        <div class="day">1</div><div class="day">2</div><div class="day">3</div>
+        <div class="day">4</div><div class="day">5</div><div class="day">6</div><div class="day">7</div>
+        <div class="day current">8</div><div class="day">9</div><div class="day">10</div>
+        </div>
+
 </body>
 </html>
