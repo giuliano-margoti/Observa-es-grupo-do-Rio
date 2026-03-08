@@ -1,15 +1,23 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8"><title>Detalhes Zeiss</title>
-    <style>body{font-family:sans-serif;padding:50px;line-height:1.6;background:#fff0f7} .card{max-width:600px;margin:auto;background:white;padding:30px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);border-top:8px solid #a91369}</style>
+    <meta charset="UTF-8"><title>Escala Zeiss</title>
+    <style>body{font-family:sans-serif;padding:40px;background:#fff0f7}.card{max-width:600px;margin:auto;background:white;padding:30px;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.1);border-top:8px solid #a91369} .info{background:#fce8f3;padding:15px;border-radius:8px;margin:20px 0} .btn{display:inline-block;padding:10px 20px;background:#a91369;color:white;text-decoration:none;border-radius:5px}</style>
 </head>
 <body>
     <div class="card">
         <h1>📸 Telescópio Zeiss 60cm</h1>
-        <p><strong>Status:</strong> Manutenção preventiva</p>
-        <p><strong>Descrição:</strong> Testes de novos filtros e astrofotografia.</p>
-        <a href="../index.html">← Voltar ao Calendário</a>
+        <div class="info">
+            <p><strong>Observador:</strong> <span id="obs">---</span></p>
+            <p><strong>Projeto:</strong> <span id="proj">---</span></p>
+        </div>
+        <p><i>Nota: Cuidado com a cúpula durante ventos fortes.</i></p>
+        <a href="../index.html" class="btn">← Voltar</a>
     </div>
+    <script>
+        const p = new URLSearchParams(window.location.search);
+        document.getElementById('obs').innerText = p.get('obs') || "Não definido";
+        document.getElementById('proj').innerText = p.get('proj') || "Astrofotografia/Teste";
+    </script>
 </body>
 </html>
