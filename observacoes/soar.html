@@ -13,13 +13,22 @@
 
         .info{background:#e8f0fe;padding:15px;border-radius:8px;margin:20px 0}
         
-        /* Estilo dos botões de Ocultação - Azul agora */
         .btn-ocultacao {
             display: block; background: #1967d2; color: white; 
             padding: 12px; margin-bottom: 8px; text-decoration: none; 
             border-radius: 6px; font-weight: bold; text-align: center;
         }
         .btn-ocultacao:hover { background: #1557b0; }
+
+        /* Estilo para a Lista de Rotação */
+        .rotação-item {
+            background: #f1f3f4;
+            margin-bottom: 5px;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 5px solid #1967d2;
+            font-weight: bold;
+        }
 
         .btn{display:inline-block;padding:10px 20px;background:#666;color:white;text-decoration:none;border-radius:5px}
     </style>
@@ -38,6 +47,11 @@
         <div id="secaoOcultacao" style="display:none; margin: 20px 0;">
             <h3 style="color: #1967d2;"> Ocultações da noite </h3>
             <div id="listaLinks"></div>
+        </div>
+
+        <div id="secaoRotação" style="display:none; margin: 20px 0;">
+            <h3 style="color: #1967d2;"> Alvos Prioritários (Rotação) </h3>
+            <div id="listaRotação"></div>
         </div>
         
         <p><strong>Nota: </strong> <span id="Nota">---</span></p>
@@ -59,24 +73,42 @@
         document.getElementById('PI').innerText = p.get('PI') || "---";
         document.getElementById('Nota').innerText = p.get('Nota') || "Sem notas";
 
-        // LÓGICA DE OCULTAÇÃO (Extraindo Nome:Link)
+        // LÓGICA DE OCULTAÇÃO
         if (projeto.toLowerCase().includes("ocultação")) {
             const linksString = p.get('links');
             if (linksString) {
                 document.getElementById('secaoOcultacao').style.display = 'block';
                 const container = document.getElementById('listaLinks');
-                
-                const pares = linksString.split(','); // Divide os objetos
+                const pares = linksString.split(',');
                 pares.forEach(par => {
-                    const [nomeObjeto, url] = par.split(':'); // Divide o nome da URL pelo ":"
-                    if(nomeObjeto && url) {
+                    const firstColon = par.indexOf(':');
+                    if(firstColon !== -1) {
+                        const nomeObjeto = par.substring(0, firstColon).trim();
+                        const url = par.substring(firstColon + 1).trim();
                         const a = document.createElement('a');
-                        a.href = url.trim();
+                        a.href = url;
                         a.target = "_blank";
                         a.className = "btn-ocultacao";
-                        a.innerText = nomeObjeto.trim(); // Texto do botão é o nome do objeto
+                        a.innerText = nomeObjeto;
                         container.appendChild(a);
                     }
+                });
+            }
+        }
+
+        // --- NOVA LÓGICA DE ROTAÇÃO ---
+        if (projeto.toLowerCase().includes("rotação")) {
+            const alvosString = p.get('alvos');
+            if (alvosString) {
+                document.getElementById('secaoRotação').style.display = 'block';
+                const container = document.getElementById('listaRotação');
+                const alvos = alvosString.split(','); 
+                
+                alvos.forEach((alvo, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'rotação-item';
+                    div.innerText = `${index + 1}: ${alvo.trim()}`;
+                    container.appendChild(div);
                 });
             }
         }
