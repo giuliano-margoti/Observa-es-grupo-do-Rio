@@ -6,18 +6,21 @@
 </head>
 <body>
     <div class="card">
-        <h1>🔭 Telescópio 1.6m (Perkin-Elmer)</h1>
+        <h1> Telescópio 1.6m (Perkin-Elmer)</h1>
         <div class="info">
-            <p><strong>Observador:</strong> <span id="obs">---</span></p>
+            <p><strong>Observadores:</strong> <span id="obs">---</span></p>
             <p><strong>Projeto:</strong> <span id="proj">---</span></p>
+            <p><strong>PI:</strong> <span id="PI">---</span></p>
         </div>
-        <p><i>Nota: Verifique o nitrogênio líquido antes de iniciar a noite.</i></p>
+        <p><strong>Nota: </strong> <span id="Nota">---</span></p>
         <a href="../index.html" class="btn">← Voltar</a>
     </div>
     <script>
         const p = new URLSearchParams(window.location.search);
         document.getElementById('obs').innerText = p.get('obs') || "Não definido";
-        document.getElementById('proj').innerText = p.get('proj') || "Geral";
+        document.getElementById('proj').innerText = p.get('proj') || "Ciência";
+        document.getElementById('PI').innerText = p.get('PI') || "PI";
+        document.getElementById('Nota').innerText = p.get('Nota') || "Sem notas";
     </script>
 </body>
 </html>
