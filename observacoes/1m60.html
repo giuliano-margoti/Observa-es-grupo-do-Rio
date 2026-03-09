@@ -55,7 +55,7 @@
         }
 
         const projNorm = projeto.toLowerCase();
-        if (projNorm.includes("ocultação")) {
+        if (projNorm.includes("ocultação")) || projNorm.includes("occultation")){
             document.getElementById('secaoOcultacao').style.display = 'block';
             p.get('links')?.split(',').forEach(par => {
                 const idx = par.indexOf(':');
@@ -67,7 +67,7 @@
                 }
             });
         }
-        if (projNorm.includes("rotação")) {
+        if (projNorm.includes("rotação")) || projNorm.includes("rotation")) {
             document.getElementById('secaoRotação').style.display = 'block';
             p.get('alvos')?.split(',').forEach((alvo, i) => {
                 const div = document.createElement('div'); div.className = 'lista-item';
@@ -75,7 +75,7 @@
                 document.getElementById('listaRotação').appendChild(div);
             });
         }
-        if (projNorm.includes("astrometria")) {
+        if (projNorm.includes("astrometria")) || projNorm.includes("astrometry")){
             document.getElementById('secaoAstrometria').style.display = 'block';
             p.get('campos')?.split(',').forEach((c, i) => {
                 const div = document.createElement('div'); div.className = 'lista-item';
