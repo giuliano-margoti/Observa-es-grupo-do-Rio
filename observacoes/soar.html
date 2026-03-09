@@ -2,20 +2,52 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8"><title>Escala SOAR</title>
-    <style>body{font-family:sans-serif;padding:40px;background:#f0f4f8}.card{max-width:600px;margin:auto;background:white;padding:30px;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.1);border-top:8px solid #1967d2} .info{background:#e8f0fe;padding:15px;border-radius:8px;margin:20px 0} .btn{display:inline-block;padding:10px 20px;background:#1967d2;color:white;text-decoration:none;border-radius:5px}</style>
+    <style>
+        body{font-family:sans-serif;padding:40px;background:#f0f4f8}
+        
+        .card{
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-top: 8px solid #1967d2;
+            overflow: hidden; 
+        }
+
+        /* CONFIGURAÇÃO DA IMAGEM PARA CORTAR O CÉU */
+        .telescope-img {
+            width: 100%;          /* Faz a imagem ocupar toda a largura do card */
+            height: 300px;        /* Altura fixa para criar o efeito de corte. Ajuste se quiser mais ou menos céu */
+            object-fit: cover;    /* Corta a imagem para preencher o espaço sem esticar */
+            object-position: center bottom; /* Mantém a parte de baixo (telescópio) e corta o topo (céu) */
+            border-radius: 8px;   /* Arredonda os cantos da imagem */
+            margin: 10px 0;       /* Espaçamento vertical */
+            display: block;
+        }
+
+        .info{background:#e8f0fe;padding:15px;border-radius:8px;margin:20px 0}
+        .btn{display:inline-block;padding:10px 20px;background:#1967d2;color:white;text-decoration:none;border-radius:5px}
+    </style>
 </head>
 <body>
     <div class="card">
         <h1> Telescópio SOAR 4.1m</h1>
+        
         <img src="../image.png" alt="Telescópio SOAR" class="telescope-img">
+        
         <div class="info">
             <p><strong>Observadores:</strong> <span id="obs">---</span></p>
             <p><strong>Projeto:</strong> <span id="proj">---</span></p>
             <p><strong>PI:</strong> <span id="PI">---</span></p>
         </div>
+        
         <p><strong>Nota: </strong> <span id="Nota">---</span></p>
+        
         <a href="../index.html" class="btn">← Voltar</a>
     </div>
+
     <script>
         const p = new URLSearchParams(window.location.search);
         document.getElementById('obs').innerText = p.get('obs') || "Não definido";
