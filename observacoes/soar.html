@@ -42,8 +42,14 @@
             <p><strong>PI:</strong> <span id="PI">---</span></p>
         </div>
         
-        <p><strong>Nota: </strong> <span id="Nota">---</span></p>
+<p><strong>Nota: </strong> <span id="Nota">---</span></p>
         
+        <div id="containerPlano" style="display:none; margin-top: 15px; padding: 10px; border: 1px dashed #1967d2; border-radius: 8px;">
+            <strong>📄 Plano de Observação:</strong> 
+            <a id="linkPlano" href="#" target="_blank" style="color: #1967d2; font-weight: bold;">Abrir Tabela de Objetos</a>
+        </div>
+
+        <br>
         <a href="../index.html" class="btn">← Voltar</a>
     </div>
 
@@ -53,6 +59,14 @@
         document.getElementById('proj').innerText = p.get('proj') || "Ciência";
         document.getElementById('PI').innerText = p.get('PI') || "PI";
         document.getElementById('Nota').innerText = p.get('Nota') || "Sem notas";
+
+        // Lógica para o Plano da Noite
+        const arquivoPlano = p.get('plano');
+        if (arquivoPlano) {
+            const container = document.getElementById('containerPlano');
+            const link = document.getElementById('linkPlano');
+            
+            container.style.display = 'block'; // Mostra o quadro do plano
+            link.href = "../" + arquivoPlano;  // Aponta para o arquivo na raiz do GitHub
+        }
     </script>
-</body>
-</html>
