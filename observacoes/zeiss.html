@@ -8,16 +8,19 @@
     <div class="card">
         <h1>📸 Telescópio Zeiss 60cm</h1>
         <div class="info">
-            <p><strong>Observador:</strong> <span id="obs">---</span></p>
+            <p><strong>Observadores:</strong> <span id="obs">---</span></p>
             <p><strong>Projeto:</strong> <span id="proj">---</span></p>
+            <p><strong>PI:</strong> <span id="PI">---</span></p>
         </div>
-        <p><i>Nota: Cuidado com a cúpula durante ventos fortes.</i></p>
+        <p><strong>Nota: </strong> <span id="Nota">---</span></p>
         <a href="../index.html" class="btn">← Voltar</a>
     </div>
     <script>
         const p = new URLSearchParams(window.location.search);
         document.getElementById('obs').innerText = p.get('obs') || "Não definido";
-        document.getElementById('proj').innerText = p.get('proj') || "Astrofotografia/Teste";
+        document.getElementById('proj').innerText = p.get('proj') || "Ciência";
+        document.getElementById('PI').innerText = p.get('PI') || "PI";
+        document.getElementById('Nota').innerText = p.get('Nota') || "Sem notas";
     </script>
 </body>
 </html>
