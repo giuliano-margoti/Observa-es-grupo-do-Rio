@@ -97,7 +97,7 @@
 
         // --- AS OUTRAS LÓGICAS (Ocultação, Rotação, Astrometria) ---
         const projetoNormalizado = projeto.toLowerCase();
-        if (projetoNormalizado.includes("ocultação")) {
+        if (projetoNormalizado.includes("ocultação") || projetoNormalizado.includes("occultation")) {
             const linksString = p.get('links');
             if (linksString) {
                 document.getElementById('secaoOcultacao').style.display = 'block';
@@ -115,7 +115,7 @@
             }
         }
         // Rotação
-        if (projetoNormalizado.includes("rotação")) {
+        if (projetoNormalizado.includes("rotação") || projetoNormalizado.includes("rotation")) {
             const alvosString = p.get('alvos');
             if (alvosString) {
                 document.getElementById('secaoRotação').style.display = 'block';
@@ -129,7 +129,7 @@
             }
         }
         // Astrometria
-        if (projetoNormalizado.includes("astrometria")) {
+        if (projetoNormalizado.includes("astrometria") || projetoNormalizado.includes("astrometry")) {
             const camposString = p.get('campos');
             if (camposString) {
                 document.getElementById('secaoAstrometria').style.display = 'block';
