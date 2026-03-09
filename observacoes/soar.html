@@ -18,7 +18,9 @@
     <script>
         const p = new URLSearchParams(window.location.search);
         document.getElementById('obs').innerText = p.get('obs') || "Não definido";
-        document.getElementById('proj').innerText = p.get('proj') || "Ciência Ativa";
+        document.getElementById('proj').innerText = p.get('proj') || "Ciência";
+        document.getElementById('PI').innerText = p.get('PI') || "PI";
+        document.getElementById('Nota').innerText = p.get('Nota') || "Sem notas";
     </script>
 </body>
 </html>
