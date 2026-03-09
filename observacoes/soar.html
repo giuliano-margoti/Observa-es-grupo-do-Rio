@@ -4,93 +4,89 @@
     <meta charset="UTF-8"><title>Escala SOAR</title>
     <style>
         body{font-family:sans-serif;padding:40px;background:#f0f4f8}
+        .card{max-width:600px;margin:auto;background:white;padding:30px;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.1);border-top:8px solid #1967d2}
         
-        .card{
-            max-width: 600px;
-            margin: auto;
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border-top: 8px solid #1967d2;
-            overflow: hidden; 
-        }
-
         .telescope-img {
-            width: 100%;          /* Faz a imagem ocupar toda a largura do card */
-            height: 100px;        /* Altura fixa para criar o efeito de corte. Ajuste se quiser mais ou menos céu */
-            object-fit: cover;    /* Corta a imagem para preencher o espaço sem esticar */
-            object-position: center; /* Mantém a parte de baixo (telescópio) e corta o topo (céu) */
-            border-radius: 8px;   /* Arredonda os cantos da imagem */
-            margin: 10px 0;       /* Espaçamento vertical */
-            display: block;
+            width: 100%; height: 300px; object-fit: cover; object-position: center bottom;
+            border-radius: 8px; margin: 10px 0; display: block;
         }
 
         .info{background:#e8f0fe;padding:15px;border-radius:8px;margin:20px 0}
-        .btn{display:inline-block;padding:10px 20px;background:#1967d2;color:white;text-decoration:none;border-radius:5px}
+        
+        /* Estilo dos botões de Ocultação - Azul agora */
+        .btn-ocultacao {
+            display: block; background: #1967d2; color: white; 
+            padding: 12px; margin-bottom: 8px; text-decoration: none; 
+            border-radius: 6px; font-weight: bold; text-align: center;
+        }
+        .btn-ocultacao:hover { background: #1557b0; }
+
+        .btn{display:inline-block;padding:10px 20px;background:#666;color:white;text-decoration:none;border-radius:5px}
     </style>
 </head>
 <body>
     <div class="card">
         <h1> Telescópio SOAR 4.1m</h1>
+        <img src="../image.png" alt="Telescópio SOAR" class="telescope-img">
         
-        <img src="../imagens/SOAR.png" alt="Telescópio SOAR" class="telescope-img">
-        
-<div class="info">
+        <div class="info">
             <p><strong>Observadores:</strong> <span id="obs">---</span></p>
             <p><strong>Projeto:</strong> <span id="proj">---</span></p>
             <p><strong>PI:</strong> <span id="PI">---</span></p>
         </div>
 
         <div id="secaoOcultacao" style="display:none; margin: 20px 0;">
-            <h3 style="color: #f0f4f8;">Alvos</h3>
-            <ul id="listaLinks" style="list-style: none; padding: 0;">
-                </ul>
-        </div>
-
-        <p><strong>Nota: </strong> <span id="Nota">---</span></p>
-
-        <div id="containerPlano" style="display:none; margin-bottom: 20px; padding: 10px; border: 1px dashed #ccc;">
-            <strong>📄 Observação Backup:</strong> <a id="linkPlano" href="#" target="_blank">Tabela de alvos</a>
+            <h3 style="color: #1967d2;">🎯 Objetos de Ocultação (Prioridade)</h3>
+            <div id="listaLinks"></div>
         </div>
         
+        <p><strong>Nota: </strong> <span id="Nota">---</span></p>
+        
+        <div id="containerPlano" style="display:none; margin-top:15px; border-top: 1px solid #ccc; padding-top:10px;">
+            <strong>📄 Plano da Noite:</strong> <a id="linkPlano" href="#" target="_blank">Abrir Arquivo</a>
+        </div>
+
+        <br>
         <a href="../index.html" class="btn">← Voltar</a>
     </div>
 
     <script>
         const p = new URLSearchParams(window.location.search);
-        const projeto = p.get('proj') || "Ciência";
+        const projeto = p.get('proj') || "";
         
         document.getElementById('obs').innerText = p.get('obs') || "---";
         document.getElementById('proj').innerText = projeto;
         document.getElementById('PI').innerText = p.get('PI') || "---";
-        document.getElementById('Nota').innerText = p.get('Nota') || "---";
+        document.getElementById('Nota').innerText = p.get('Nota') || "Sem notas";
 
-        // --- LÓGICA DE OCULTAÇÃO (LINKS DE PRIORIDADE) ---
+        // LÓGICA DE OCULTAÇÃO (Extraindo Nome:Link)
         if (projeto.toLowerCase().includes("ocultação")) {
             const linksString = p.get('links');
             if (linksString) {
-                const listaContainer = document.getElementById('secaoOcultacao');
-                const listaUl = document.getElementById('listaLinks');
-                listaContainer.style.display = 'block';
-
-                const linksArray = linksString.split(','); // Divide os links pela vírgula
-                linksArray.forEach((url, index) => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `
-                        <a href="${url.trim()}" target="_blank" 
-                           style="display: block; background: #d32f2f; color: white; padding: 10px; margin-bottom: 5px; text-decoration: none; border-radius: 5px; font-weight: bold;">
-                           Prioridade ${index + 1}: Abrir Mapa/Previsão
-                        </a>`;
-                    listaUl.appendChild(li);
+                document.getElementById('secaoOcultacao').style.display = 'block';
+                const container = document.getElementById('listaLinks');
+                
+                const pares = linksString.split(','); // Divide os objetos
+                pares.forEach(par => {
+                    const [nomeObjeto, url] = par.split(':'); // Divide o nome da URL pelo ":"
+                    if(nomeObjeto && url) {
+                        const a = document.createElement('a');
+                        a.href = url.trim();
+                        a.target = "_blank";
+                        a.className = "btn-ocultacao";
+                        a.innerText = nomeObjeto.trim(); // Texto do botão é o nome do objeto
+                        container.appendChild(a);
+                    }
                 });
             }
         }
 
-        // --- LÓGICA DO PLANO TXT ---
-        const arquivoPlano = p.get('plano');
-        if (arquivoPlano) {
+        // PLANO TXT
+        const plano = p.get('plano');
+        if (plano) {
             document.getElementById('containerPlano').style.display = 'block';
-            document.getElementById('linkPlano').href = "../" + arquivoPlano;
+            document.getElementById('linkPlano').href = "../" + plano;
         }
     </script>
+</body>
+</html>
