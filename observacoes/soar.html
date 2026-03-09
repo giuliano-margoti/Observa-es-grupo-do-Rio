@@ -36,37 +36,61 @@
         
         <img src="../imagens/SOAR.png" alt="Telescópio SOAR" class="telescope-img">
         
-        <div class="info">
+<div class="info">
             <p><strong>Observadores:</strong> <span id="obs">---</span></p>
             <p><strong>Projeto:</strong> <span id="proj">---</span></p>
             <p><strong>PI:</strong> <span id="PI">---</span></p>
         </div>
-        
-<p><strong>Nota: </strong> <span id="Nota">---</span></p>
-        
-        <div id="containerPlano" style="display:none; margin-top: 15px; padding: 10px; border: 1px dashed #1967d2; border-radius: 8px;">
-            <strong>📄 Plano de Observação:</strong> 
-            <a id="linkPlano" href="#" target="_blank" style="color: #1967d2; font-weight: bold;">Abrir Tabela de Objetos</a>
+
+        <div id="secaoOcultacao" style="display:none; margin: 20px 0;">
+            <h3 style="color: #d32f2f;">🎯 Prioridades de Ocultação</h3>
+            <ul id="listaLinks" style="list-style: none; padding: 0;">
+                </ul>
         </div>
 
-        <br>
+        <p><strong>Nota: </strong> <span id="Nota">---</span></p>
+
+        <div id="containerPlano" style="display:none; margin-bottom: 20px; padding: 10px; border: 1px dashed #ccc;">
+            <strong>📄 Arquivo de Busca:</strong> <a id="linkPlano" href="#" target="_blank">Ver TXT</a>
+        </div>
+        
         <a href="../index.html" class="btn">← Voltar</a>
     </div>
 
     <script>
         const p = new URLSearchParams(window.location.search);
-        document.getElementById('obs').innerText = p.get('obs') || "Não definido";
-        document.getElementById('proj').innerText = p.get('proj') || "Ciência";
-        document.getElementById('PI').innerText = p.get('PI') || "PI";
-        document.getElementById('Nota').innerText = p.get('Nota') || "Sem notas";
+        const projeto = p.get('proj') || "Ciência";
+        
+        document.getElementById('obs').innerText = p.get('obs') || "---";
+        document.getElementById('proj').innerText = projeto;
+        document.getElementById('PI').innerText = p.get('PI') || "---";
+        document.getElementById('Nota').innerText = p.get('Nota') || "---";
 
-        // Lógica para o Plano da Noite
+        // --- LÓGICA DE OCULTAÇÃO (LINKS DE PRIORIDADE) ---
+        if (projeto.toLowerCase().includes("ocultação")) {
+            const linksString = p.get('links');
+            if (linksString) {
+                const listaContainer = document.getElementById('secaoOcultacao');
+                const listaUl = document.getElementById('listaLinks');
+                listaContainer.style.display = 'block';
+
+                const linksArray = linksString.split(','); // Divide os links pela vírgula
+                linksArray.forEach((url, index) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <a href="${url.trim()}" target="_blank" 
+                           style="display: block; background: #d32f2f; color: white; padding: 10px; margin-bottom: 5px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                           Prioridade ${index + 1}: Abrir Mapa/Previsão
+                        </a>`;
+                    listaUl.appendChild(li);
+                });
+            }
+        }
+
+        // --- LÓGICA DO PLANO TXT ---
         const arquivoPlano = p.get('plano');
         if (arquivoPlano) {
-            const container = document.getElementById('containerPlano');
-            const link = document.getElementById('linkPlano');
-            
-            container.style.display = 'block'; // Mostra o quadro do plano
-            link.href = "../" + arquivoPlano;  // Aponta para o arquivo na raiz do GitHub
+            document.getElementById('containerPlano').style.display = 'block';
+            document.getElementById('linkPlano').href = "../" + arquivoPlano;
         }
     </script>
