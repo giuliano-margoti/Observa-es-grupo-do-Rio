@@ -30,11 +30,10 @@
 
         /* Cores dos Telescópios */
         .event-link { display: block; font-size: 11px; font-weight: 600; padding: 3px 6px; border-radius: 4px; margin-top: 3px; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .noite-1m60 { background-color: #e2f7ed; color: #0d652d; border-left: 3px solid #0d652d; }
-        .noite-iag { background-color: #feefc3; color: #b05a00; border-left: 3px solid #b05a00; }
+        .event-1m60 { background-color: #e2f7ed; color: #0d652d; border-left: 3px solid #0d652d; }
+        .event-iag { background-color: #feefc3; color: #b05a00; border-left: 3px solid #b05a00; }
         .event-soar { background-color: #e8f0fe; color: #1967d2; border-left: 3px solid #1967d2; }
-        .noite-soar { background-color: #e8f0fe; color: #1967d2; border-left: 3px solid #1967d2; }
-        .noite-zeiss { background-color: #fce8f3; color: #a91369; border-left: 3px solid #a91369; }
+        .event-zeiss { background-color: #fce8f3; color: #a91369; border-left: 3px solid #a91369; }
         .event-link:hover { filter: brightness(0.95); text-decoration: underline; }
     </style>
 </head>
@@ -62,8 +61,8 @@
         const eventos = [
             // Março (Mês 2)
             { dia: 04, mes: 2, ano: 2026, nome: "SOAR: Ocultação",   link: "observacoes/soar.html?obs=Julio Camargo&proj=ocultação&PI=Julio Camargo&Nota=Teste.", classe: "event-soar" },
-            { dia: 07, mes: 2, ano: 2026, nome: "1m60: Ocultação",   link: "observacoes/1m60.html?obs=NaNa&proj=Ocultações", classe: "noite-opd" },
-            { dia: 07, mes: 2, ano: 2026, nome: "Zeiss: Ocultação",  link: "observacoes/zeiss.html?obs=Giuliano MArgoti; Jonatã Silva; Taigo Pinheiro&proj=Ocultações", classe: "noite-opd" },
+            { dia: 07, mes: 2, ano: 2026, nome: "1m60: Ocultação",   link: "observacoes/1m60.html?obs=NaNa&proj=Ocultações", classe: "event-1m60" },
+            { dia: 07, mes: 2, ano: 2026, nome: "Zeiss: Ocultação",  link: "observacoes/zeiss.html?obs=Giuliano MArgoti; Jonatã Silva; Taigo Pinheiro&proj=Ocultações", classe: "event-zeiss" },
         ];
 
         let currentDate = new Date();
