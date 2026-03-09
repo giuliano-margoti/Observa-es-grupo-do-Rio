@@ -21,17 +21,10 @@
         }
         .btn-ocultacao:hover { background: #1557b0; }
 
-        /* Itens de Rotação */
-        .rotação-item {
+        /* Estilo Padrão para Listas (Rotação e Astrometria) */
+        .lista-item {
             background: #f1f3f4; margin-bottom: 5px; padding: 10px;
             border-radius: 5px; border-left: 5px solid #1967d2; font-weight: bold;
-        }
-
-        /* Itens de Astrometria (Visual Diferente) */
-        .astrometria-item {
-            background: #eef2f7; margin-bottom: 5px; padding: 10px;
-            border-radius: 5px; border-left: 5px solid #455a64;
-            font-family: monospace; font-size: 14px; color: #263238;
         }
 
         .btn{display:inline-block;padding:10px 20px;background:#666;color:white;text-decoration:none;border-radius:5px}
@@ -59,7 +52,7 @@
         </div>
 
         <div id="secaoAstrometria" style="display:none; margin: 20px 0;">
-            <h3 style="color: #455a64;"> Campos de Astrometria </h3>
+            <h3 style="color: #1967d2;"> Alvos Prioritários (Astrometria) </h3>
             <div id="listaAstrometria"></div>
         </div>
         
@@ -84,7 +77,7 @@
 
         const projetoNormalizado = projeto.toLowerCase();
 
-        // 1. LÓGICA DE OCULTAÇÃO
+        // 1. OCULTAÇÃO
         if (projetoNormalizado.includes("ocultação")) {
             const linksString = p.get('links');
             if (linksString) {
@@ -104,7 +97,7 @@
             }
         }
 
-        // 2. LÓGICA DE ROTAÇÃO
+        // 2. ROTAÇÃO
         if (projetoNormalizado.includes("rotação")) {
             const alvosString = p.get('alvos');
             if (alvosString) {
@@ -112,14 +105,14 @@
                 const container = document.getElementById('listaRotação');
                 alvosString.split(',').forEach((alvo, index) => {
                     const div = document.createElement('div');
-                    div.className = 'rotação-item';
+                    div.className = 'lista-item'; // Estilo igual à rotação
                     div.innerText = `${index + 1}: ${alvo.trim()}`;
                     container.appendChild(div);
                 });
             }
         }
 
-        // 3. LÓGICA DE ASTROMETRIA
+        // 3. ASTROMETRIA (EXATAMENTE IGUAL À ROTAÇÃO)
         if (projetoNormalizado.includes("astrometria")) {
             const camposString = p.get('campos');
             if (camposString) {
@@ -127,8 +120,8 @@
                 const container = document.getElementById('listaAstrometria');
                 camposString.split(',').forEach((campo, index) => {
                     const div = document.createElement('div');
-                    div.className = 'astrometria-item';
-                    div.innerText = `Campo ${index + 1} ➔ ${campo.trim()}`;
+                    div.className = 'lista-item'; // Estilo igual à rotação
+                    div.innerText = `${index + 1}: ${campo.trim()}`;
                     container.appendChild(div);
                 });
             }
