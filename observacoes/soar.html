@@ -13,18 +13,26 @@
 
         .info{background:#e8f0fe;padding:15px;border-radius:8px;margin:20px 0}
         
-        /* Botões Ocultação */
+        /* Estilo dos itens de lista e botões */
         .btn-ocultacao {
             display: block; background: #1967d2; color: white; 
             padding: 12px; margin-bottom: 8px; text-decoration: none; 
             border-radius: 6px; font-weight: bold; text-align: center;
         }
-        .btn-ocultacao:hover { background: #1557b0; }
-
-        /* Estilo Padrão para Listas (Rotação e Astrometria) */
         .lista-item {
             background: #f1f3f4; margin-bottom: 5px; padding: 10px;
             border-radius: 5px; border-left: 5px solid #1967d2; font-weight: bold;
+        }
+
+        /* Estilo para a caixa de arquivos auxiliares */
+        .aux-box {
+            background: #fff3e0; padding: 15px; border-radius: 8px; 
+            margin-top: 20px; border: 1px solid #ffe0b2;
+        }
+        .btn-download {
+            display: inline-block; background: #ef6c00; color: white; 
+            padding: 8px 15px; text-decoration: none; border-radius: 4px; 
+            font-size: 13px; font-weight: bold; margin-top: 5px;
         }
 
         .btn{display:inline-block;padding:10px 20px;background:#666;color:white;text-decoration:none;border-radius:5px}
@@ -38,25 +46,20 @@
         <div class="info">
             <p><strong>Observadores:</strong> <span id="obs">---</span></p>
             <p><strong>Projeto:</strong> <span id="proj">---</span></p>
-            <p><strong>PI:</strong> <span id="PI">---</span></p>
+            <p><strong>Detector:</strong> <span id="det">---</span></p> <p><strong>PI:</strong> <span id="PI">---</span></p>
         </div>
 
-        <div id="secaoOcultacao" style="display:none; margin: 20px 0;">
-            <h3 style="color: #1967d2;"> Ocultações da noite </h3>
-            <div id="listaLinks"></div>
-        </div>
-
-        <div id="secaoRotação" style="display:none; margin: 20px 0;">
-            <h3 style="color: #1967d2;"> Alvos Prioritários (Rotação) </h3>
-            <div id="listaRotação"></div>
-        </div>
-
-        <div id="secaoAstrometria" style="display:none; margin: 20px 0;">
-            <h3 style="color: #1967d2;"> Alvos Prioritários (Astrometria) </h3>
-            <div id="listaAstrometria"></div>
-        </div>
+        <div id="secaoOcultacao" style="display:none; margin: 20px 0;"><h3 style="color: #1967d2;"> Ocultações </h3><div id="listaLinks"></div></div>
+        <div id="secaoRotação" style="display:none; margin: 20px 0;"><h3 style="color: #1967d2;"> Rotação </h3><div id="listaRotação"></div></div>
+        <div id="secaoAstrometria" style="display:none; margin: 20px 0;"><h3 style="color: #1967d2;"> Astrometria </h3><div id="listaAstrometria"></div></div>
         
         <p><strong>Nota: </strong> <span id="Nota">---</span></p>
+
+        <div id="secaoAux" style="display:none;" class="aux-box">
+            <strong>📁 Arquivos Auxiliares (.fov):</strong><br>
+            <span id="nomeFov" style="font-size: 14px;"></span><br>
+            <a id="linkDownload" href="#" class="btn-download" download>📥 Baixar arquivo FOV</a>
+        </div>
         
         <div id="containerPlano" style="display:none; margin-top:15px; border-top: 1px solid #ccc; padding-top:10px;">
             <strong> Projeto Backup:</strong> <a id="linkPlano" href="#" target="_blank">Plano da noite</a>
@@ -69,35 +72,49 @@
     <script>
         const p = new URLSearchParams(window.location.search);
         const projeto = p.get('proj') || "";
+        const detector = p.get('det') || ""; // Pega o detector do link
         
         document.getElementById('obs').innerText = p.get('obs') || "---";
         document.getElementById('proj').innerText = projeto;
+        document.getElementById('det').innerText = detector || "Não especificado";
         document.getElementById('PI').innerText = p.get('PI') || "---";
         document.getElementById('Nota').innerText = p.get('Nota') || "Sem notas";
 
-        const projetoNormalizado = projeto.toLowerCase();
+        // LÓGICA DO DOWNLOAD AUTOMÁTICO (.fov)
+        if (detector) {
+            const detNome = detector.toLowerCase();
+            let arquivo = "";
 
-        // 1. OCULTAÇÃO
+            if (detNome.includes("goodman")) arquivo = "goodman-soar.fov";
+            if (detNome.includes("raptor")) arquivo = "raptor-soar.fov";
+
+            if (arquivo) {
+                document.getElementById('secaoAux').style.display = 'block';
+                document.getElementById('nomeFov').innerText = "Configuração para " + detector;
+                document.getElementById('linkDownload').href = "../fov/" + arquivo;
+            }
+        }
+
+        // --- AS OUTRAS LÓGICAS (Ocultação, Rotação, Astrometria) ---
+        const projetoNormalizado = projeto.toLowerCase();
         if (projetoNormalizado.includes("ocultação")) {
             const linksString = p.get('links');
             if (linksString) {
                 document.getElementById('secaoOcultacao').style.display = 'block';
                 const container = document.getElementById('listaLinks');
-                const pares = linksString.split(',');
-                pares.forEach(par => {
+                linksString.split(',').forEach(par => {
                     const firstColon = par.indexOf(':');
                     if(firstColon !== -1) {
-                        const nomeObjeto = par.substring(0, firstColon).trim();
-                        const url = par.substring(firstColon + 1).trim();
                         const a = document.createElement('a');
-                        a.href = url; a.target = "_blank"; a.className = "btn-ocultacao";
-                        a.innerText = nomeObjeto; container.appendChild(a);
+                        a.href = par.substring(firstColon + 1).trim();
+                        a.target = "_blank"; a.className = "btn-ocultacao";
+                        a.innerText = par.substring(0, firstColon).trim();
+                        container.appendChild(a);
                     }
                 });
             }
         }
-
-        // 2. ROTAÇÃO
+        // Rotação
         if (projetoNormalizado.includes("rotação")) {
             const alvosString = p.get('alvos');
             if (alvosString) {
@@ -105,14 +122,13 @@
                 const container = document.getElementById('listaRotação');
                 alvosString.split(',').forEach((alvo, index) => {
                     const div = document.createElement('div');
-                    div.className = 'lista-item'; // Estilo igual à rotação
+                    div.className = 'lista-item';
                     div.innerText = `${index + 1}: ${alvo.trim()}`;
                     container.appendChild(div);
                 });
             }
         }
-
-        // 3. ASTROMETRIA (EXATAMENTE IGUAL À ROTAÇÃO)
+        // Astrometria
         if (projetoNormalizado.includes("astrometria")) {
             const camposString = p.get('campos');
             if (camposString) {
@@ -120,7 +136,7 @@
                 const container = document.getElementById('listaAstrometria');
                 camposString.split(',').forEach((campo, index) => {
                     const div = document.createElement('div');
-                    div.className = 'lista-item'; // Estilo igual à rotação
+                    div.className = 'lista-item';
                     div.innerText = `${index + 1}: ${campo.trim()}`;
                     container.appendChild(div);
                 });
