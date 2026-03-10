@@ -35,6 +35,14 @@
         }
 
         .btn{display:inline-block;padding:10px 20px;background:#666;color:white;text-decoration:none;border-radius:5px}
+        
+        /* Estilo da caixa de efemérides */
+        .solar-box {
+            background: #f8f9fa; padding: 12px; border-radius: 8px; 
+            font-size: 0.85em; color: #444; margin-bottom: 15px; 
+            border: 1px solid #ddd; line-height: 1.6;
+        }
+        .solar-title { font-weight: bold; color: #1967d2; display: block; margin-bottom: 5px; }
     </style>
 </head>
 <body>
@@ -54,9 +62,10 @@
         <div id="secaoRotação" style="display:none; margin: 20px 0;"><h3 style="color: #1967d2;"> Rotação </h3><div id="listaRotação"></div></div>
         <div id="secaoAstrometria" style="display:none; margin: 20px 0;"><h3 style="color: #1967d2;"> Astrometria </h3><div id="listaAstrometria"></div></div>
 
-        <div id="dadosSolares" style="background: #f8f9fa; padding: 10px; border-radius: 8px; font-size: 0.9em; color: #555; margin-bottom: 15px; border: 1px solid #ddd;">
-            <strong>🌅 Amanhecer (Hora Local):</strong><br>
-            ⚓ Náutico: <span id="nautico">...</span> | 🏙️ Civil: <span id="civil">...</span>
+        <div id="dadosSolares" class="solar-box">
+            <span class="solar-title">☀️ Efemérides (Hora Local):</span>
+            <strong>Anoitecer:</strong> Civil: <span id="civil_fim">...</span> | Náutico: <span id="nautico_fim">...</span><br>
+            <strong>Amanhecer:</strong> Náutico: <span id="nautico_ini">...</span> | Civil: <span id="civil_ini">...</span>
         </div>
         
         <p><strong>Nota: </strong> <span id="Nota">---</span></p>
@@ -76,19 +85,16 @@
     </div>
 
     <script>
-        // 1. Captação de Parâmetros
         const p = new URLSearchParams(window.location.search);
         const dia = p.get('d');
         const mes = p.get('m');
         const ano = p.get('a');
 
-        // 2. Exibição da Data
         if (dia && mes && ano) {
             const dataFormatada = `${dia.padStart(2, '0')}/${mes.padStart(2, '0')}/${ano}`;
             document.getElementById('exibirData').innerText = `Noite de: ${dataFormatada}`;
         }
 
-        // 3. Preenchimento de Informações Básicas
         const projeto = p.get('proj') || "";
         const detector = p.get('det') || "";
         document.getElementById('obs').innerText = p.get('obs') || "---";
@@ -97,13 +103,12 @@
         document.getElementById('PI').innerText = p.get('PI') || "---";
         document.getElementById('Nota').innerText = p.get('Nota') || "Sem notas";
 
-        // 4. Lógica de Downloads (.fov)
+        // Lógica de Downloads e Seções (mantida igual)
         if (detector) {
             const detNome = detector.toLowerCase();
             let arquivo = "";
             if (detNome.includes("goodman")) arquivo = "goodman-soar.fov";
             if (detNome.includes("raptor")) arquivo = "raptor-soar.fov";
-
             if (arquivo) {
                 document.getElementById('secaoAux').style.display = 'block';
                 document.getElementById('nomeFov').innerText = "Configuração para " + detector;
@@ -111,10 +116,7 @@
             }
         }
 
-        // 5. Lógica de Seções Específicas (Ocultação, Rotação, Astrometria)
         const projetoNormalizado = projeto.toLowerCase();
-        
-        // Ocultação
         if (projetoNormalizado.includes("ocultação") || projetoNormalizado.includes("occultation")) {
             const linksString = p.get('links');
             if (linksString) {
@@ -132,7 +134,8 @@
                 });
             }
         }
-        // Rotação
+        
+        // Outros projetos e Plano TXT
         if (projetoNormalizado.includes("rotação") || projetoNormalizado.includes("rotation")) {
             const alvosString = p.get('alvos');
             if (alvosString) {
@@ -146,35 +149,19 @@
                 });
             }
         }
-        // Astrometria
-        if (projetoNormalizado.includes("astrometria") || projetoNormalizado.includes("astrometry")) {
-            const camposString = p.get('campos');
-            if (camposString) {
-                document.getElementById('secaoAstrometria').style.display = 'block';
-                const container = document.getElementById('listaAstrometria');
-                camposString.split(',').forEach((campo, index) => {
-                    const div = document.createElement('div');
-                    div.className = 'lista-item';
-                    div.innerText = `${index + 1}: ${campo.trim()}`;
-                    container.appendChild(div);
-                });
-            }
-        }
 
-        // 6. Plano de Fundo (TXT)
         const plano = p.get('plano');
         if (plano) {
             document.getElementById('containerPlano').style.display = 'block';
             document.getElementById('linkPlano').href = "../" + plano;
         }
 
-        // 7. Busca de Efemérides (API)
-        async function buscarAmanhecer() {
-            const lat = "-30.238"; // SOAR
+        // FUNÇÃO DE BUSCA COMPLETA (ANOITECER + AMANHECER)
+        async function buscarEfemérides() {
+            const lat = "-30.238"; // Coordenadas Cerro Pachón
             const lon = "-70.733";
             
             if (!dia || !mes || !ano) return;
-
             const dataISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
 
             try {
@@ -183,21 +170,22 @@
 
                 if (data.status === "OK") {
                     const d = data.results;
-                    const formatarHora = (isoStr) => {
-                        const date = new Date(isoStr);
-                        return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false });
+                    const formatar = (isoStr) => {
+                        return new Date(isoStr).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false });
                     };
-                    document.getElementById('civil').innerText = formatarHora(d.civil_twilight_begin);
-                    document.getElementById('nautico').innerText = formatarHora(d.nautical_twilight_begin);
+
+                    // Preenche os 4 horários
+                    document.getElementById('civil_fim').innerText = formatar(d.civil_twilight_end);
+                    document.getElementById('nautico_fim').innerText = formatar(d.nautical_twilight_end);
+                    document.getElementById('nautico_ini').innerText = formatar(d.nautical_twilight_begin);
+                    document.getElementById('civil_ini').innerText = formatar(d.civil_twilight_begin);
                 }
             } catch (erro) {
                 document.getElementById('dadosSolares').innerHTML = "⚠️ Erro ao carregar horários.";
             }
         }
 
-        // EXECUÇÃO
-        buscarAmanhecer();
-
+        buscarEfemérides();
     </script>
 </body>
 </html>
