@@ -78,7 +78,7 @@
         if (detector) {
             const d = detector.toLowerCase();
             let arq = "";
-            if (d.includes("sami")) arq = "sami-soar.fov";
+            if (d.includes("raptor")) arq = "raptor-soar.fov";
             if (d.includes("goodman")) arq = "goodman-soar.fov";
             
             if (arq) {
@@ -88,7 +88,6 @@
             }
         }
 
-        // Lógica de Projetos (Mantida)
         const linksString = p.get('links');
         if (projeto.toLowerCase().includes("ocultação") || linksString) {
             if (linksString) {
