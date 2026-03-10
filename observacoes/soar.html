@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8"><title>Escala SOAR</title>
+    <meta charset="UTF-8">
+    <title>Escala SOAR</title>
     <style>
         body{font-family:sans-serif;padding:40px;background:#f0f4f8}
         .card{max-width:600px;margin:auto;background:white;padding:30px;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.1);border-top:8px solid #1967d2}
@@ -13,7 +14,6 @@
 
         .info{background:#e8f0fe;padding:15px;border-radius:8px;margin:20px 0}
         
-        /* Estilo dos itens de lista e botões */
         .btn-ocultacao {
             display: block; background: #1967d2; color: white; 
             padding: 12px; margin-bottom: 8px; text-decoration: none; 
@@ -24,7 +24,6 @@
             border-radius: 5px; border-left: 5px solid #1967d2; font-weight: bold;
         }
 
-        /* Estilo para a caixa de arquivos auxiliares */
         .aux-box {
             background: #fff3e0; padding: 15px; border-radius: 8px; 
             margin-top: 20px; border: 1px solid #ffe0b2;
@@ -47,16 +46,17 @@
         <div class="info">
             <p><strong>Observadores:</strong> <span id="obs">---</span></p>
             <p><strong>Projeto:</strong> <span id="proj">---</span></p>
-            <p><strong>Detector:</strong> <span id="det">---</span></p> <p><strong>PI:</strong> <span id="PI">---</span></p>
+            <p><strong>Detector:</strong> <span id="det">---</span></p> 
+            <p><strong>PI:</strong> <span id="PI">---</span></p>
         </div>
 
         <div id="secaoOcultacao" style="display:none; margin: 20px 0;"><h3 style="color: #1967d2;"> Ocultações </h3><div id="listaLinks"></div></div>
         <div id="secaoRotação" style="display:none; margin: 20px 0;"><h3 style="color: #1967d2;"> Rotação </h3><div id="listaRotação"></div></div>
         <div id="secaoAstrometria" style="display:none; margin: 20px 0;"><h3 style="color: #1967d2;"> Astrometria </h3><div id="listaAstrometria"></div></div>
 
-        <div id="dadosSolares" style="font-size: 0.9em; color: #555; margin-bottom: 15px;">
-            🌅 Amanhecer Civil: <span id="civil">...</span> | 
-            ⚓ Náutico: <span id="nautico">...</span>
+        <div id="dadosSolares" style="background: #f8f9fa; padding: 10px; border-radius: 8px; font-size: 0.9em; color: #555; margin-bottom: 15px; border: 1px solid #ddd;">
+            <strong>🌅 Amanhecer (Hora Local):</strong><br>
+            ⚓ Náutico: <span id="nautico">...</span> | 🏙️ Civil: <span id="civil">...</span>
         </div>
         
         <p><strong>Nota: </strong> <span id="Nota">---</span></p>
@@ -76,33 +76,31 @@
     </div>
 
     <script>
-        // Função para pegar dados da URL
-        const params = new URLSearchParams(window.location.search);
-        const dia = params.get('d');
-        const mes = params.get('m');
-        const ano = params.get('a');
-    
+        // 1. Captação de Parâmetros
+        const p = new URLSearchParams(window.location.search);
+        const dia = p.get('d');
+        const mes = p.get('m');
+        const ano = p.get('a');
+
+        // 2. Exibição da Data
         if (dia && mes && ano) {
-            // Formata para o padrão 00/00/0000
             const dataFormatada = `${dia.padStart(2, '0')}/${mes.padStart(2, '0')}/${ano}`;
             document.getElementById('exibirData').innerText = `Noite de: ${dataFormatada}`;
         }
-        
-        const p = new URLSearchParams(window.location.search);
+
+        // 3. Preenchimento de Informações Básicas
         const projeto = p.get('proj') || "";
-        const detector = p.get('det') || ""; // Pega o detector do link
-        
+        const detector = p.get('det') || "";
         document.getElementById('obs').innerText = p.get('obs') || "---";
         document.getElementById('proj').innerText = projeto;
         document.getElementById('det').innerText = detector || "Não especificado";
         document.getElementById('PI').innerText = p.get('PI') || "---";
         document.getElementById('Nota').innerText = p.get('Nota') || "Sem notas";
 
-        // LÓGICA DO DOWNLOAD AUTOMÁTICO (.fov)
+        // 4. Lógica de Downloads (.fov)
         if (detector) {
             const detNome = detector.toLowerCase();
             let arquivo = "";
-
             if (detNome.includes("goodman")) arquivo = "goodman-soar.fov";
             if (detNome.includes("raptor")) arquivo = "raptor-soar.fov";
 
@@ -113,8 +111,10 @@
             }
         }
 
-        // --- AS OUTRAS LÓGICAS (Ocultação, Rotação, Astrometria) ---
+        // 5. Lógica de Seções Específicas (Ocultação, Rotação, Astrometria)
         const projetoNormalizado = projeto.toLowerCase();
+        
+        // Ocultação
         if (projetoNormalizado.includes("ocultação") || projetoNormalizado.includes("occultation")) {
             const linksString = p.get('links');
             if (linksString) {
@@ -161,49 +161,43 @@
             }
         }
 
-        // PLANO TXT
+        // 6. Plano de Fundo (TXT)
         const plano = p.get('plano');
         if (plano) {
             document.getElementById('containerPlano').style.display = 'block';
             document.getElementById('linkPlano').href = "../" + plano;
         }
-        
+
+        // 7. Busca de Efemérides (API)
         async function buscarAmanhecer() {
-        const lat = "-30.238";
-        const lon = "-70.733";
-        
-        // Verificamos se temos os dados da URL
-        if (!dia || !mes || !ano) return;
-    
-        // IMPORTANTE: A API espera YYYY-MM-DD. 
-        // Como o 'mes' que vem da URL já é o número real (ex: 3 para Março), usamos direto.
-        const dataISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
-    
-        try {
-            const resp = await fetch(`https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&date=${dataISO}&formatted=0`);
-            const data = await resp.json();
-    
-            if (data.status === "OK") {
-                const d = data.results;
-                
-                const formatarHora = (isoStr) => {
-                    const date = new Date(isoStr);
-                    // Retorna no formato 24h
-                    return date.toLocaleTimeString('pt-BR', { 
-                        hour: '2-digit', 
-                        minute: '2-digit',
-                        hour12: false 
-                    });
-                };
-    
-                document.getElementById('civil').innerText = formatarHora(d.civil_twilight_begin);
-                document.getElementById('nautico').innerText = formatarHora(d.nautical_twilight_begin);
+            const lat = "-30.238"; // SOAR
+            const lon = "-70.733";
+            
+            if (!dia || !mes || !ano) return;
+
+            const dataISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+
+            try {
+                const resp = await fetch(`https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&date=${dataISO}&formatted=0`);
+                const data = await resp.json();
+
+                if (data.status === "OK") {
+                    const d = data.results;
+                    const formatarHora = (isoStr) => {
+                        const date = new Date(isoStr);
+                        return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false });
+                    };
+                    document.getElementById('civil').innerText = formatarHora(d.civil_twilight_begin);
+                    document.getElementById('nautico').innerText = formatarHora(d.nautical_twilight_begin);
+                }
+            } catch (erro) {
+                document.getElementById('dadosSolares').innerHTML = "⚠️ Erro ao carregar horários.";
             }
-        } catch (erro) {
-            console.error("Erro:", erro);
-            document.getElementById('dadosSolares').innerHTML = "⚠️ Erro ao carregar efemérides.";
         }
-    }
+
+        // EXECUÇÃO
+        buscarAmanhecer();
+
     </script>
 </body>
 </html>
