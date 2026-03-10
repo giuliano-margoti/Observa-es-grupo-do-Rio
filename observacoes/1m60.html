@@ -160,9 +160,9 @@
             document.getElementById('linkPlano').href = "../" + p.get('plano');
         }
 
-        // --- BUSCA DE EFEMÉRIDES (BRASÓPOLIS - OPD) ---
+        // --- BUSCA DE EFEMÉRIDES (PICO DOS DIAS - OPD) ---
         async function buscarEfemérides() {
-            const lat = "-22.534"; // Pico dos Dias
+            const lat = "-22.534"; 
             const lon = "-45.582";
             
             if (!dia || !mes || !ano) return;
@@ -186,7 +186,7 @@
                     document.getElementById('civil_ini').innerText = formatarUTC(d.civil_twilight_begin);
                 }
             } catch (erro) {
-                document.getElementById('dadosSolares').innerHTML = "⚠️ Erro ao carregar efemérides.";
+                document.getElementById('dadosSolares').innerHTML = "⚠️ Erro ao carregar horários UTC.";
             }
         }
 
