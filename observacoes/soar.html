@@ -169,42 +169,41 @@
         }
         
         async function buscarAmanhecer() {
-            // Coordenadas aproximadas do SOAR (Cerro Pachón)
-            const lat = "-30.238";
-            const lon = "-70.733";
-            
-            // Pegamos a data que já extraímos da URL (dia, mes, ano)
-            if (!dia || !mes || !ano) return;
+        const lat = "-30.238";
+        const lon = "-70.733";
         
-            const dataISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
-        
-            try {
-                // Usando uma API gratuita de nascer do sol
-                const resp = await fetch(`https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&date=${dataISO}&formatted=0`);
-                const data = await resp.json();
-        
-                if (data.status === "OK") {
-                    const d = data.results;
-                    
-                    // Função para formatar a hora (converte UTC para local ou apenas corta a string)
-                    const formatarHora = (isoStr) => {
-                        const date = new Date(isoStr);
-                        // Ajuste para o fuso do Chile (geralmente UTC-3 ou UTC-4)
-                        // Aqui formatamos para a hora local do navegador do usuário
-                        return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                    };
-        
-                    document.getElementById('civil').innerText = formatarHora(d.civil_twilight_begin);
-                    document.getElementById('nautico').innerText = formatarHora(d.nautical_twilight_begin);
-                }
-            } catch (erro) {
-                console.error("Erro ao buscar dados solares:", erro);
-                document.getElementById('dadosSolares').innerText = "Erro ao carregar efemérides.";
+        // Verificamos se temos os dados da URL
+        if (!dia || !mes || !ano) return;
+    
+        // IMPORTANTE: A API espera YYYY-MM-DD. 
+        // Como o 'mes' que vem da URL já é o número real (ex: 3 para Março), usamos direto.
+        const dataISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+    
+        try {
+            const resp = await fetch(`https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&date=${dataISO}&formatted=0`);
+            const data = await resp.json();
+    
+            if (data.status === "OK") {
+                const d = data.results;
+                
+                const formatarHora = (isoStr) => {
+                    const date = new Date(isoStr);
+                    // Retorna no formato 24h
+                    return date.toLocaleTimeString('pt-BR', { 
+                        hour: '2-digit', 
+                        minute: '2-digit',
+                        hour12: false 
+                    });
+                };
+    
+                document.getElementById('civil').innerText = formatarHora(d.civil_twilight_begin);
+                document.getElementById('nautico').innerText = formatarHora(d.nautical_twilight_begin);
             }
+        } catch (erro) {
+            console.error("Erro:", erro);
+            document.getElementById('dadosSolares').innerHTML = "⚠️ Erro ao carregar efemérides.";
         }
-        
-        // Chama a função
-        buscarAmanhecer();
+    }
     </script>
 </body>
 </html>
