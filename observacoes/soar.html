@@ -109,20 +109,36 @@
         document.getElementById('PI').innerText = p.get('PI') || "---";
         document.getElementById('Nota').innerText = p.get('Nota') || "---";
 
+        // --- EFEMÉRIDES UTC (SOAR) ---
         async function buscarEfemérides() {
-            const lat = "-30.238", lon = "-70.733";
-            const d = p.get('d'), m = p.get('m'), a = p.get('a');
-            if (!d) return;
+            const lat = "-30.238"; 
+            const lon = "-70.733";
+            
+            if (!dia || !mes || !ano) return;
+            const dataISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+
             try {
-                const resp = await fetch(`https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&date=${a}-${m}-${d}&formatted=0`);
-                const json = await resp.json();
-                const fmt = (s) => new Date(s).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit', timeZone:'UTC'});
-                document.getElementById('civil_fim').innerText = fmt(json.results.civil_twilight_end);
-                document.getElementById('nautico_fim').innerText = fmt(json.results.nautical_twilight_end);
-                document.getElementById('nautico_ini').innerText = fmt(json.results.nautical_twilight_begin);
-                document.getElementById('civil_ini').innerText = fmt(json.results.civil_twilight_begin);
-            } catch (e) { console.error(e); }
+                const resp = await fetch(`https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&date=${dataISO}&formatted=0`);
+                const data = await resp.json();
+
+                if (data.status === "OK") {
+                    const d = data.results;
+                    const formatarUTC = (isoStr) => {
+                        return new Date(isoStr).toLocaleTimeString('pt-BR', { 
+                            hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'UTC' 
+                        });
+                    };
+
+                    document.getElementById('civil_fim').innerText = formatarUTC(d.civil_twilight_end);
+                    document.getElementById('nautico_fim').innerText = formatarUTC(d.nautical_twilight_end);
+                    document.getElementById('nautico_ini').innerText = formatarUTC(d.nautical_twilight_begin);
+                    document.getElementById('civil_ini').innerText = formatarUTC(d.civil_twilight_begin);
+                }
+            } catch (erro) {
+                document.getElementById('dadosSolares').innerHTML = "⚠️ Erro ao carregar horários.";
+            }
         }
+
         buscarEfemérides();
     </script>
 </body>
