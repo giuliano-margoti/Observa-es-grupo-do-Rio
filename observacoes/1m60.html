@@ -13,7 +13,6 @@
         .btn-download { display: inline-block; background: #2e7d32; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-size: 13px; font-weight: bold; margin-top: 5px; }
         .btn{display:inline-block;padding:10px 20px;background:#666;color:white;text-decoration:none;border-radius:5px}
         
-        /* Estilo da caixa de efemérides (Verde Dark) */
         .solar-box {
             background: #1b3022; padding: 12px; border-radius: 8px; 
             font-size: 0.85em; color: #e8f5e9; margin: 15px 0; 
@@ -66,13 +65,14 @@
         const dia = p.get('d');
         const mes = p.get('m');
         const ano = p.get('a');
+        const projeto = p.get('proj') || "";
+        const projetoNormalizado = projeto.toLowerCase(); // DEFINIÇÃO DA VARIÁVEL FALTANTE
     
         if (dia && mes && ano) {
             const dataFormatada = `${dia.padStart(2, '0')}/${mes.padStart(2, '0')}/${ano}`;
             document.getElementById('exibirData').innerText = `Noite de: ${dataFormatada}`;
         }
         
-        const projeto = p.get('proj') || "";
         const detector = p.get('det') || "";
         document.getElementById('obs').innerText = p.get('obs') || "---";
         document.getElementById('proj').innerText = projeto;
@@ -86,14 +86,13 @@
             document.getElementById('linkDownload').href = "../fov/sparc4-1m60.fov";
         }
 
-        // --- 1. SEÇÃO DE OCULTAÇÃO ---
-        // Aparece se o nome do projeto contiver "ocultação" OU se houver o parâmetro "links"
+        // --- 1. OCULTAÇÃO ---
         const linksString = p.get('links');
-        if (projeto.includes("ocultação") || projeto.includes("occultation") || linksString) {
+        if (projetoNormalizado.includes("ocultação") || projetoNormalizado.includes("occultation") || linksString) {
             if (linksString) {
                 document.getElementById('secaoOcultacao').style.display = 'block';
                 const container = document.getElementById('listaLinks');
-                container.innerHTML = ""; // Limpa antes de preencher
+                container.innerHTML = "";
                 linksString.split(',').forEach(par => {
                     const idx = par.indexOf(':');
                     if(idx !== -1) {
@@ -107,10 +106,9 @@
             }
         }
     
-        // --- 2. SEÇÃO DE ROTAÇÃO ---
-        // Aparece se o nome do projeto contiver "rotação" OU se houver o parâmetro "alvos"
+        // --- 2. ROTAÇÃO ---
         const alvosString = p.get('alvos');
-        if (projeto.includes("rotação") || projeto.includes("rotation") || alvosString) {
+        if (projetoNormalizado.includes("rotação") || projetoNormalizado.includes("rotation") || alvosString) {
             if (alvosString) {
                 document.getElementById('secaoRotação').style.display = 'block';
                 const container = document.getElementById('listaRotação');
@@ -124,10 +122,9 @@
             }
         }
     
-        // --- 3. SEÇÃO DE ASTROMETRIA ---
-        // Aparece se o nome do projeto contiver "astrometria" OU se houver o parâmetro "campos"
+        // --- 3. ASTROMETRIA ---
         const camposString = p.get('campos');
-        if (projeto.includes("astrometria") || projeto.includes("astrometry") || camposString) {
+        if (projetoNormalizado.includes("astrometria") || projetoNormalizado.includes("astrometry") || camposString) {
             if (camposString) {
                 document.getElementById('secaoAstrometria').style.display = 'block';
                 const container = document.getElementById('listaAstrometria');
@@ -141,37 +138,20 @@
             }
         }
 
-        if (projetoNormalizado.includes("astrometria") || projetoNormalizado.includes("astrometry")) {
-            const camposString = p.get('campos');
-            if (camposString) {
-                document.getElementById('secaoAstrometria').style.display = 'block';
-                const container = document.getElementById('listaAstrometria');
-                camposString.split(',').forEach((campo, index) => {
-                    const div = document.createElement('div');
-                    div.className = 'lista-item';
-                    div.innerText = `${index + 1}: ${campo.trim()}`;
-                    container.appendChild(div);
-                });
-            }
-        }
-        
         if (p.get('plano')) {
             document.getElementById('containerPlano').style.display = 'block';
             document.getElementById('linkPlano').href = "../" + p.get('plano');
         }
 
-        // --- BUSCA DE EFEMÉRIDES (PICO DOS DIAS - OPD) ---
+        // --- BUSCA DE EFEMÉRIDES ---
         async function buscarEfemérides() {
             const lat = "-22.534"; 
             const lon = "-45.582";
-            
             if (!dia || !mes || !ano) return;
             const dataISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
-
             try {
                 const resp = await fetch(`https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&date=${dataISO}&formatted=0`);
                 const data = await resp.json();
-
                 if (data.status === "OK") {
                     const d = data.results;
                     const formatarUTC = (isoStr) => {
@@ -179,7 +159,6 @@
                             hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'UTC' 
                         });
                     };
-
                     document.getElementById('civil_fim').innerText = formatarUTC(d.civil_twilight_end);
                     document.getElementById('nautico_fim').innerText = formatarUTC(d.nautical_twilight_end);
                     document.getElementById('nautico_ini').innerText = formatarUTC(d.nautical_twilight_begin);
@@ -189,7 +168,6 @@
                 document.getElementById('dadosSolares').innerHTML = "⚠️ Erro ao carregar horários UTC.";
             }
         }
-
         buscarEfemérides();
     </script>
 </body>
