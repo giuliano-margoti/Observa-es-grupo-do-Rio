@@ -29,7 +29,7 @@
         .today .day-number { background-color: var(--google-blue); color: white; border-radius: 50%; }
 
         /* Cores dos Telescópios */
-        .event-link { display: block; font-size: 11px; font-weight: 600; padding: 3px 6px; border-radius: 4px; margin-top: 3px; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .event-link {display: block; font-size: 11px; padding: 4px 6px; margin-top: 3px; border-radius: 4px; text-decoration: none; line-height: 1.2;}
         .event-1m60 { background-color: #e2f7ed; color: #0d652d; border-left: 3px solid #0d652d; }
         .event-iag { background-color: #feefc3; color: #b05a00; border-left: 3px solid #b05a00; }
         .event-soar { background-color: #e8f0fe; color: #1967d2; border-left: 3px solid #1967d2; }
@@ -85,7 +85,7 @@
               classe: "event-zeiss" 
             },  
             // Abril (Mês 3)
-            {dia: 09,mes: 3,ano: 2026,nome: "1m60: Ocultação; \n Giuliano, jonatã, eros, fernanda", link:"observacoes/1m60.html?proj=Studying small Solar System bodies through stellar occultations&PI=Julio Ignacio Bueno de Camargo&links=Bernardinelli-Bernstein:https://lesia.obspm.fr/lucky-star/occ.php?p=155276&det=sparc4", classe: "event-1m60"},
+            {dia: 09,mes: 3,ano: 2026,nome: "1m60: Ocultação (Giuliano, jonatã, eros, fernanda)", link:"observacoes/1m60.html?proj=Studying small Solar System bodies through stellar occultations&PI=Julio Ignacio Bueno de Camargo&links=Bernardinelli-Bernstein:https://lesia.obspm.fr/lucky-star/occ.php?p=155276&det=sparc4", classe: "event-1m60"},
             {dia: 10,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?proj=Rotation photometryof the Trojan object (1143) Odysseus&PI=Johannes Antunes Nascimento Rodrigues&alvos=Odysseus&det=ikonl", classe: "event-iag"},
             {dia: 11,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?proj=Rotation photometryof the Trojan object (1143) Odysseus&PI=Johannes Antunes Nascimento Rodrigues&alvos=Odysseus&det=ikonl", classe: "event-iag"},
             {dia: 12,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?proj=Rotation photometryof the Trojan object (1143) Odysseus&PI=Johannes Antunes Nascimento Rodrigues&alvos=Odysseus&det=ikonl", classe: "event-iag"},
@@ -116,14 +116,39 @@
             for (let day = 1; day <= daysInMonth; day++) {
                 const dayDiv = document.createElement('div');
                 dayDiv.className = 'calendar-day';
-                if(day === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear()) dayDiv.classList.add('today');
+                
+                // Marca o dia atual
+                if(day === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear()) {
+                    dayDiv.classList.add('today');
+                }
+                
                 dayDiv.innerHTML = `<div class="day-number">${day}</div>`;
+                
+                // Filtra e renderiza os eventos
                 eventos.filter(e => e.dia === day && e.mes === month && e.ano === year).forEach(ev => {
-                    dayDiv.innerHTML += `<a href="${ev.link}" class="event-link ${ev.classe}">${ev.nome}</a>`;
+                    // 1. Gera a data automática para o link
+                    const dataFormatada = `${day.toString().padStart(2, '0')}/${(month + 1).toString().padStart(2, '0')}/${year}`;
+                    const separador = ev.link.includes('?') ? '&' : '?';
+                    const linkFinal = `${ev.link}${separador}data=${dataFormatada}`;
+            
+                    // 2. Extrai os observadores do link para exibir no calendário
+                    // Vamos pegar o que vem depois de "obs=" e antes do próximo "&"
+                    const params = new URLSearchParams(ev.link.split('?')[1]);
+                    const obs = params.get('obs') || "";
+                    
+                    // Formata o texto dos observadores (menor e embaixo)
+                    const obsHTML = obs ? `<div style="font-size: 9px; opacity: 0.8; font-weight: normal; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${obs}</div>` : "";
+            
+                    // 3. Adiciona o link ao dia
+                    dayDiv.innerHTML += `
+                        <a href="${linkFinal}" class="event-link ${ev.classe}" title="${ev.nome} - ${obs}">
+                            <div style="font-weight: bold;">${ev.nome}</div>
+                            ${obsHTML}
+                        </a>`;
                 });
+                
                 grid.appendChild(dayDiv);
             }
-        }
 
         function changeMonth(off) { currentDate.setMonth(currentDate.getMonth() + off); renderCalendar(); }
         renderCalendar();
