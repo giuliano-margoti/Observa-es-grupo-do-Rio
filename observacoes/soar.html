@@ -12,6 +12,12 @@
         .lista-item { background: #f1f3f4; margin-bottom: 5px; padding: 10px; border-radius: 5px; border-left: 5px solid #1967d2; font-weight: bold; }
         .solar-box { background: #2c3e50; padding: 12px; border-radius: 8px; font-size: 0.85em; color: #ecf0f1; margin-bottom: 15px; border: 1px solid #34495e; line-height: 1.6; }
         .solar-title { font-weight: bold; color: #3498db; display: block; margin-bottom: 5px; }
+        .utc-tag { font-size: 0.75em; background: #1967d2; padding: 2px 4px; border-radius: 3px; vertical-align: middle; }
+        
+        /* Estilo padronizado da caixa auxiliar */
+        .aux-box { background: #e8f0fe; padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid #d1e3f8; }
+        .btn-download { display: inline-block; background: #1967d2; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-size: 13px; font-weight: bold; margin-top: 5px; }
+        
         .btn{display:inline-block;padding:10px 20px;background:#666;color:white;text-decoration:none;border-radius:5px}
     </style>
 </head>
@@ -41,7 +47,7 @@
         <p><strong>Nota: </strong> <span id="Nota">---</span></p>
 
         <div id="secaoAux" style="display:none;" class="aux-box">
-            <strong> Arquivos Auxiliares:</strong><br>
+            <strong>Arquivos Auxiliares:</strong><br>
             <span id="nomeFov" style="font-size: 14px;"></span><br>
             <a id="linkDownload" href="#" class="btn-download" download>Baixar arquivo FOV</a>
         </div>
@@ -68,11 +74,13 @@
         document.getElementById('PI').innerText = p.get('PI') || "---";
         document.getElementById('Nota').innerText = p.get('Nota') || "Sem notas";
 
+        // Lógica de Detector corrigida para SOAR
         if (detector) {
             const d = detector.toLowerCase();
             let arq = "";
-            if (d.includes("raptor")) arq = "raptor-soar.fov";
+            if (d.includes("sami")) arq = "sami-soar.fov";
             if (d.includes("goodman")) arq = "goodman-soar.fov";
+            
             if (arq) {
                 document.getElementById('secaoAux').style.display = 'block';
                 document.getElementById('nomeFov').innerText = "Configuração para " + detector;
@@ -80,14 +88,12 @@
             }
         }
 
-        // --- 1. SEÇÃO DE OCULTAÇÃO ---
-        // Aparece se o nome do projeto contiver "ocultação" OU se houver o parâmetro "links"
+        // Lógica de Projetos (Mantida)
         const linksString = p.get('links');
-        if (projeto.includes("ocultação") || projeto.includes("occultation") || linksString) {
+        if (projeto.toLowerCase().includes("ocultação") || linksString) {
             if (linksString) {
                 document.getElementById('secaoOcultacao').style.display = 'block';
                 const container = document.getElementById('listaLinks');
-                container.innerHTML = ""; // Limpa antes de preencher
                 linksString.split(',').forEach(par => {
                     const idx = par.indexOf(':');
                     if(idx !== -1) {
@@ -100,15 +106,12 @@
                 });
             }
         }
-    
-        // --- 2. SEÇÃO DE ROTAÇÃO ---
-        // Aparece se o nome do projeto contiver "rotação" OU se houver o parâmetro "alvos"
+
         const alvosString = p.get('alvos');
-        if (projeto.includes("rotação") || projeto.includes("rotation") || alvosString) {
+        if (projeto.toLowerCase().includes("rotação") || alvosString) {
             if (alvosString) {
                 document.getElementById('secaoRotação').style.display = 'block';
                 const container = document.getElementById('listaRotação');
-                container.innerHTML = "";
                 alvosString.split(',').forEach((alvo, i) => {
                     const div = document.createElement('div');
                     div.className = 'lista-item';
@@ -117,33 +120,25 @@
                 });
             }
         }
-    
-        // --- 3. SEÇÃO DE ASTROMETRIA ---
-        // Aparece se o nome do projeto contiver "astrometria" OU se houver o parâmetro "campos"
+
         const camposString = p.get('campos');
-        if (projeto.includes("astrometria") || projeto.includes("astrometry") || camposString) {
+        if (projeto.toLowerCase().includes("astrometria") || camposString) {
             if (camposString) {
                 document.getElementById('secaoAstrometria').style.display = 'block';
                 const container = document.getElementById('listaAstrometria');
-                container.innerHTML = "";
                 camposString.split(',').forEach((campo, i) => {
                     const div = document.createElement('div');
                     div.className = 'lista-item';
-                    div.innerText = `${i + 1}: ${campo.trim()}`;
+                    div.innerText = `Campo ${i + 1}: ${campo.trim()}`;
                     container.appendChild(div);
                 });
             }
         }
-        
-        if (p.get('plano')) {
-            document.getElementById('containerPlano').style.display = 'block';
-            document.getElementById('linkPlano').href = "../" + p.get('plano');
-        }
 
-        // --- BUSCA DE EFEMÉRIDES (PICO DOS DIAS - OPD) ---
+        // --- BUSCA DE EFEMÉRIDES CORRIGIDA (CERRO PACHÓN - CHILE) ---
         async function buscarEfemérides() {
-            const lat = "-22.534"; 
-            const lon = "-45.582";
+            const lat = "-30.238"; // Coordenada SOAR
+            const lon = "-70.733"; // Coordenada SOAR
             
             if (!dia || !mes || !ano) return;
             const dataISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
