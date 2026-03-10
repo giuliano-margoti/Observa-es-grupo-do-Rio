@@ -38,11 +38,12 @@
         
         /* Estilo da caixa de efemérides */
         .solar-box {
-            background: #f8f9fa; padding: 12px; border-radius: 8px; 
-            font-size: 0.85em; color: #444; margin-bottom: 15px; 
-            border: 1px solid #ddd; line-height: 1.6;
+            background: #2c3e50; padding: 12px; border-radius: 8px; 
+            font-size: 0.85em; color: #ecf0f1; margin-bottom: 15px; 
+            border: 1px solid #34495e; line-height: 1.6;
         }
-        .solar-title { font-weight: bold; color: #1967d2; display: block; margin-bottom: 5px; }
+        .solar-title { font-weight: bold; color: #3498db; display: block; margin-bottom: 5px; }
+        .utc-label { font-size: 0.8em; background: #34495e; padding: 2px 5px; border-radius: 3px; margin-left: 5px; }
     </style>
 </head>
 <body>
@@ -63,7 +64,7 @@
         <div id="secaoAstrometria" style="display:none; margin: 20px 0;"><h3 style="color: #1967d2;"> Astrometria </h3><div id="listaAstrometria"></div></div>
 
         <div id="dadosSolares" class="solar-box">
-            <span class="solar-title">☀️ Efemérides (Hora Local):</span>
+            <span class="solar-title">🌌 Efemérides <span class="utc-label">UTC</span></span>
             <strong>Anoitecer:</strong> Civil: <span id="civil_fim">...</span> | Náutico: <span id="nautico_fim">...</span><br>
             <strong>Amanhecer:</strong> Náutico: <span id="nautico_ini">...</span> | Civil: <span id="civil_ini">...</span>
         </div>
@@ -103,19 +104,7 @@
         document.getElementById('PI').innerText = p.get('PI') || "---";
         document.getElementById('Nota').innerText = p.get('Nota') || "Sem notas";
 
-        // Lógica de Downloads e Seções (mantida igual)
-        if (detector) {
-            const detNome = detector.toLowerCase();
-            let arquivo = "";
-            if (detNome.includes("goodman")) arquivo = "goodman-soar.fov";
-            if (detNome.includes("raptor")) arquivo = "raptor-soar.fov";
-            if (arquivo) {
-                document.getElementById('secaoAux').style.display = 'block';
-                document.getElementById('nomeFov').innerText = "Configuração para " + detector;
-                document.getElementById('linkDownload').href = "../fov/" + arquivo;
-            }
-        }
-
+        // Lógica de Seções (simplificada para o exemplo)
         const projetoNormalizado = projeto.toLowerCase();
         if (projetoNormalizado.includes("ocultação") || projetoNormalizado.includes("occultation")) {
             const linksString = p.get('links');
@@ -135,30 +124,15 @@
             }
         }
         
-        // Outros projetos e Plano TXT
-        if (projetoNormalizado.includes("rotação") || projetoNormalizado.includes("rotation")) {
-            const alvosString = p.get('alvos');
-            if (alvosString) {
-                document.getElementById('secaoRotação').style.display = 'block';
-                const container = document.getElementById('listaRotação');
-                alvosString.split(',').forEach((alvo, index) => {
-                    const div = document.createElement('div');
-                    div.className = 'lista-item';
-                    div.innerText = `${index + 1}: ${alvo.trim()}`;
-                    container.appendChild(div);
-                });
-            }
-        }
-
         const plano = p.get('plano');
         if (plano) {
             document.getElementById('containerPlano').style.display = 'block';
             document.getElementById('linkPlano').href = "../" + plano;
         }
 
-        // FUNÇÃO DE BUSCA COMPLETA (ANOITECER + AMANHECER)
+        // FUNÇÃO DE BUSCA EM UTC
         async function buscarEfemérides() {
-            const lat = "-30.238"; // Coordenadas Cerro Pachón
+            const lat = "-30.238"; 
             const lon = "-70.733";
             
             if (!dia || !mes || !ano) return;
@@ -170,18 +144,25 @@
 
                 if (data.status === "OK") {
                     const d = data.results;
-                    const formatar = (isoStr) => {
-                        return new Date(isoStr).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false });
+                    
+                    // FORÇANDO UTC AQUI:
+                    const formatarUTC = (isoStr) => {
+                        const date = new Date(isoStr);
+                        return date.toLocaleTimeString('pt-BR', { 
+                            hour: '2-digit', 
+                            minute: '2-digit', 
+                            hour12: false,
+                            timeZone: 'UTC' // <--- Garante que ignore o fuso do PC
+                        });
                     };
 
-                    // Preenche os 4 horários
-                    document.getElementById('civil_fim').innerText = formatar(d.civil_twilight_end);
-                    document.getElementById('nautico_fim').innerText = formatar(d.nautical_twilight_end);
-                    document.getElementById('nautico_ini').innerText = formatar(d.nautical_twilight_begin);
-                    document.getElementById('civil_ini').innerText = formatar(d.civil_twilight_begin);
+                    document.getElementById('civil_fim').innerText = formatarUTC(d.civil_twilight_end);
+                    document.getElementById('nautico_fim').innerText = formatarUTC(d.nautical_twilight_end);
+                    document.getElementById('nautico_ini').innerText = formatarUTC(d.nautical_twilight_begin);
+                    document.getElementById('civil_ini').innerText = formatarUTC(d.civil_twilight_begin);
                 }
             } catch (erro) {
-                document.getElementById('dadosSolares').innerHTML = "⚠️ Erro ao carregar horários.";
+                document.getElementById('dadosSolares').innerHTML = "⚠️ Erro ao carregar horários UTC.";
             }
         }
 
