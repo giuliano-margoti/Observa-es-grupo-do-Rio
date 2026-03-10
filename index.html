@@ -28,8 +28,28 @@
         .day-number { font-size: 12px; font-weight: 500; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; }
         .today .day-number { background-color: var(--google-blue); color: white; border-radius: 50%; }
 
-        /* Cores dos Telescópios */
-        .event-link { display: block; font-size: 11px; font-weight: 600; padding: 3px 6px; border-radius: 4px; margin-top: 3px; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        /* Estilo dos Eventos */
+        .event-link { 
+            display: block; 
+            font-size: 11px; 
+            padding: 4px 6px; 
+            border-radius: 4px; 
+            margin-top: 3px; 
+            text-decoration: none; 
+            line-height: 1.3; /* Espaço para as duas linhas */
+        }
+        
+        /* Subtítulo (Observadores) */
+        .event-obs {
+            display: block;
+            font-size: 9px;
+            font-weight: normal;
+            opacity: 0.8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         .event-1m60 { background-color: #e2f7ed; color: #0d652d; border-left: 3px solid #0d652d; }
         .event-iag { background-color: #feefc3; color: #b05a00; border-left: 3px solid #b05a00; }
         .event-soar { background-color: #e8f0fe; color: #1967d2; border-left: 3px solid #1967d2; }
@@ -57,46 +77,39 @@
     </div>
 
     <script>
-        // --- CONFIGURAÇÃO DE EVENTOS COM PARÂMETROS ---
         const eventos = [
             // Março (Mês 2)
             { 
-              dia: 04, 
-              mes: 2, 
-              ano: 2026, 
+              dia: 04, mes: 2, ano: 2026, 
               nome: "SOAR: Ocultação",   
               link: "observacoes/soar.html?obs=Julio; Giuliano; Eros; Jonatã; Matheus&proj=Studying small Solar System bodies through stellar occultations&PI=Julio Camargo&links=2004GV9:https://lesia.obspm.fr/lucky-star/occ.php?p=150925&Nota=A ocultação ocupa apenas 2h da noite; calibrações feitas durante o dia.&det=raptor", 
               classe: "event-soar" 
             },
             { 
-              dia: 07, 
-              mes: 2, 
-              ano: 2026, 
+              dia: 07, mes: 2, ano: 2026, 
               nome: "1m60: Ocultação",   
-              link: "observacoes/1m60.html?&proj=Studying small Solar System bodies through stellar occultations&PI=Julio Camargo&links=1996ST1:https://solarsystem.linea.org.br/prediction-event-detail/iB10E3k8u7od8knnMsid9w&plano=plano_da_noite/plano-da-noite__2025-10-28.txt&Nota=Noite cancelada.&det=sparc4", 
+              link: "observacoes/1m60.html?&obs=A definir&proj=Studying small Solar System bodies through stellar occultations&PI=Julio Camargo&links=1996ST1:https://solarsystem.linea.org.br/prediction-event-detail/iB10E3k8u7od8knnMsid9w&plano=plano_da_noite/plano-da-noite__2025-10-28.txt&Nota=Noite cancelada.&det=sparc4", 
               classe: "event-1m60" 
             },   
             { 
-              dia: 07, 
-              mes: 2, 
-              ano: 2026, 
+              dia: 07, mes: 2, ano: 2026, 
               nome: "Zeiss: Ocultação",   
               link: "observacoes/zeiss.html?&obs=Giuliano, Jonatã, Tiago&proj=Studying small Solar System bodies through stellar occultations&PI=Julio Camargo&links=1996ST1:https://solarsystem.linea.org.br/prediction-event-detail/iB10E3k8u7od8knnMsid9w&plano=plano_da_noite/plano-da-noite__2025-10-28.txt&Nota=Atividade presencial.&det=ixon", 
               classe: "event-zeiss" 
             },  
             // Abril (Mês 3)
-            {dia: 09,mes: 3,ano: 2026,nome: "1m60: Ocultação; Giuliano, jonatã, eros, fernanda", link:"observacoes/1m60.html?proj=Studying small Solar System bodies through stellar occultations&PI=Julio Ignacio Bueno de Camargo&links=Bernardinelli-Bernstein:https://lesia.obspm.fr/lucky-star/occ.php?p=155276&det=sparc4", classe: "event-1m60"},
-            {dia: 10,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?proj=Rotation photometryof the Trojan object (1143) Odysseus&PI=Johannes Antunes Nascimento Rodrigues&alvos=Odysseus&det=ikonl", classe: "event-iag"},
-            {dia: 11,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?proj=Rotation photometryof the Trojan object (1143) Odysseus&PI=Johannes Antunes Nascimento Rodrigues&alvos=Odysseus&det=ikonl", classe: "event-iag"},
-            {dia: 12,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?proj=Rotation photometryof the Trojan object (1143) Odysseus&PI=Johannes Antunes Nascimento Rodrigues&alvos=Odysseus&det=ikonl", classe: "event-iag"},
-            {dia: 13,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?proj=Rotation photometryof the Trojan object (1143) Odysseus&PI=Johannes Antunes Nascimento Rodrigues&alvos=Odysseus&det=ikonl", classe: "event-iag"},
-            {dia: 22,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?proj=Rotation light curves of the Jupiter's Trojan asteroid Diomedes, Nestor and Antilochus& PI=Helio Honório Dutra&alvos=Diomedes,Nestor,Antilochus&det=ikonl", classe: "event-iag"},
-            {dia: 23,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?proj=Rotation light curves of the Jupiter's Trojan asteroid Diomedes, Nestor and Antilochus& PI=Helio Honório Dutra&alvos=Diomedes,Nestor,Antilochus&det=ikonl", classe: "event-iag"},
-            {dia: 24,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?proj=Rotation light curves of the Jupiter's Trojan asteroid Diomedes, Nestor and Antilochus& PI=Helio Honório Dutra&alvos=Diomedes,Nestor,Antilochus&det=ikonl", classe: "event-iag"},
-            {dia: 25,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?proj=Rotation light curves of the Jupiter's Trojan asteroid Diomedes, Nestor and Antilochus& PI=Helio Honório Dutra&alvos=Diomedes,Nestor,Antilochus&det=ikonl", classe: "event-iag"},
-            {dia: 26,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?proj=Rotation light curves of the Jupiter's Trojan asteroid Diomedes, Nestor and Antilochus& PI=Helio Honório Dutra&alvos=Diomedes,Nestor,Antilochus&det=ikonl", classe: "event-iag"},
-            {dia: 30,mes: 3,ano: 2026,nome: "1m60: Ocultação", link:"observacoes/1m60.html?proj=Studying small Solar System bodies through stellar occultations&PI=Julio Ignacio Bueno de Camargo&links=Orcus:https://lesia.obspm.fr/lucky-star/occ.php?p=157033&det=sparc4", classe: "event-1m60"},
-            {dia: 30,mes: 3,ano: 2026,nome: "SOAR: Ocultação", link:"observacoes/soar.html?proj=Studying small Solar System bodies through stellar occultations&PI=Julio Ignacio Bueno de Camargo&links=Orcus:https://lesia.obspm.fr/lucky-star/occ.php?p=157033", classe: "event-soar"},            
+            {dia: 09,mes: 3,ano: 2026,nome: "1m60: Ocultação", link:"observacoes/1m60.html?obs=Giuliano, jonatã, eros, fernanda&proj=Studying small Solar System bodies through stellar occultations&PI=Julio Ignacio Bueno de Camargo&links=Bernardinelli-Bernstein:https://lesia.obspm.fr/lucky-star/occ.php?p=155276&det=sparc4", classe: "event-1m60"},
+            {dia: 10,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?obs=Johannes&proj=Rotation photometryof the Trojan object (1143) Odysseus&PI=Johannes Antunes Nascimento Rodrigues&alvos=Odysseus&det=ikonl", classe: "event-iag"},
+            {dia: 11,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?obs=Johannes&proj=Rotation photometryof the Trojan object (1143) Odysseus&PI=Johannes Antunes Nascimento Rodrigues&alvos=Odysseus&det=ikonl", classe: "event-iag"},
+            {dia: 12,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?obs=Johannes&proj=Rotation photometryof the Trojan object (1143) Odysseus&PI=Johannes Antunes Nascimento Rodrigues&alvos=Odysseus&det=ikonl", classe: "event-iag"},
+            {dia: 13,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?obs=Johannes&proj=Rotation photometryof the Trojan object (1143) Odysseus&PI=Johannes Antunes Nascimento Rodrigues&alvos=Odysseus&det=ikonl", classe: "event-iag"},
+            {dia: 22,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?obs=Helio&proj=Rotation light curves of the Jupiter's Trojan asteroid Diomedes, Nestor and Antilochus&PI=Helio Honório Dutra&alvos=Diomedes,Nestor,Antilochus&det=ikonl", classe: "event-iag"},
+            {dia: 23,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?obs=Helio&proj=Rotation light curves of the Jupiter's Trojan asteroid Diomedes, Nestor and Antilochus&PI=Helio Honório Dutra&alvos=Diomedes,Nestor,Antilochus&det=ikonl", classe: "event-iag"},
+            {dia: 24,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?obs=Helio&proj=Rotation light curves of the Jupiter's Trojan asteroid Diomedes, Nestor and Antilochus&PI=Helio Honório Dutra&alvos=Diomedes,Nestor,Antilochus&det=ikonl", classe: "event-iag"},
+            {dia: 25,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?obs=Helio&proj=Rotation light curves of the Jupiter's Trojan asteroid Diomedes, Nestor and Antilochus&PI=Helio Honório Dutra&alvos=Diomedes,Nestor,Antilochus&det=ikonl", classe: "event-iag"},
+            {dia: 26,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?obs=Helio&proj=Rotation light curves of the Jupiter's Trojan asteroid Diomedes, Nestor and Antilochus&PI=Helio Honório Dutra&alvos=Diomedes,Nestor,Antilochus&det=ikonl", classe: "event-iag"},
+            {dia: 30,mes: 3,ano: 2026,nome: "1m60: Ocultação", link:"observacoes/1m60.html?obs=Julio&proj=Studying small Solar System bodies through stellar occultations&PI=Julio Ignacio Bueno de Camargo&links=Orcus:https://lesia.obspm.fr/lucky-star/occ.php?p=157033&det=sparc4", classe: "event-1m60"},
+            {dia: 30,mes: 3,ano: 2026,nome: "SOAR: Ocultação", link:"observacoes/soar.html?obs=Julio&proj=Studying small Solar System bodies through stellar occultations&PI=Julio Ignacio Bueno de Camargo&links=Orcus:https://lesia.obspm.fr/lucky-star/occ.php?p=157033", classe: "event-soar"},                           
         ];
 
         let currentDate = new Date();
@@ -107,7 +120,9 @@
             grid.innerHTML = "";
             const month = currentDate.getMonth();
             const year = currentDate.getFullYear();
+            
             monthDisplay.innerText = `${["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"][month]} ${year}`;
+            
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
@@ -117,9 +132,28 @@
                 const dayDiv = document.createElement('div');
                 dayDiv.className = 'calendar-day';
                 if(day === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear()) dayDiv.classList.add('today');
+                
                 dayDiv.innerHTML = `<div class="day-number">${day}</div>`;
+                
                 eventos.filter(e => e.dia === day && e.mes === month && e.ano === year).forEach(ev => {
-                    dayDiv.innerHTML += `<a href="${ev.link}" class="event-link ${ev.classe}">${ev.nome}</a>`;
+                    // Extração segura dos observadores do link
+                    let obsList = "";
+                    try {
+                        const urlParts = ev.link.split('?');
+                        if (urlParts.length > 1) {
+                            const params = new URLSearchParams(urlParts[1]);
+                            obsList = params.get('obs') || "";
+                        }
+                    } catch (e) { obsList = ""; }
+
+                    // Adiciona o evento com título e observadores (se existirem)
+                    const obsHTML = obsList ? `<span class="event-obs">${obsList}</span>` : "";
+                    
+                    dayDiv.innerHTML += `
+                        <a href="${ev.link}" class="event-link ${ev.classe}" title="${obsList}">
+                            <strong>${ev.nome}</strong>
+                            ${obsHTML}
+                        </a>`;
                 });
                 grid.appendChild(dayDiv);
             }
