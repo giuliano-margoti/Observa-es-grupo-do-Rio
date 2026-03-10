@@ -1,187 +1,353 @@
 <!DOCTYPE html>
+
 <html lang="pt-br">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Calendário de Observações - Grupo do Rio</title>
+
     <style>
+
         :root {
+
             --google-blue: #1a73e8;
+
             --gray-line: #dadce0;
+
             --text-main: #3c4043;
+
         }
+
+
 
         body { font-family: 'Roboto', Arial, sans-serif; color: var(--text-main); display: flex; flex-direction: column; align-items: center; background-color: #fff; margin: 0; padding: 20px; }
 
+
+
         header { width: 100%; max-width: 1000px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--google-blue); padding-bottom: 10px; }
 
+
+
         .nav-buttons button { background: #fff; border: 1px solid var(--gray-line); padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+
         .nav-buttons button:hover { background: #f1f3f4; }
 
+
+
         .calendar-container { width: 100%; max-width: 1000px; border: 1px solid var(--gray-line); border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
         .calendar-header { display: grid; grid-template-columns: repeat(7, 1fr); background: #f8f9fa; border-bottom: 1px solid var(--gray-line); }
+
         .day-label { padding: 10px; text-align: center; font-size: 12px; font-weight: 500; color: #70757a; text-transform: uppercase; }
 
+
+
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+
         .calendar-day { min-height: 120px; padding: 5px; border-right: 1px solid var(--gray-line); border-bottom: 1px solid var(--gray-line); background: #fff; }
+
         .calendar-day:nth-child(7n) { border-right: none; }
+
         .day-number { font-size: 12px; font-weight: 500; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin-bottom: 4px; }
+
         .today .day-number { background-color: var(--google-blue); color: white; border-radius: 50%; }
 
+
+
+        /* Estilo dos Eventos (Links) */
+
         .event-link { 
+
             display: block; 
+
             font-size: 10px; 
+
             padding: 4px 6px; 
+
             border-radius: 4px; 
+
             margin-top: 4px; 
+
             text-decoration: none; 
-            line-height: 1.1;
+
+            line-height: 1.1; /* Linhas mais juntas para caber mais */
+
             transition: filter 0.2s;
+
         }
+
         
+
+        /* Título do Telescópio/Ciência */
+
         .event-title {
+
             display: block;
+
             font-weight: bold;
+
             margin-bottom: 2px;
+
             white-space: nowrap;
+
             overflow: hidden;
+
             text-overflow: ellipsis;
+
         }
+
+
+
+        /* Subtítulo (Observadores) - Agora permite várias linhas */
 
         .event-obs {
+
             display: -webkit-box;
-            -webkit-line-clamp: 4;
+
+            -webkit-line-clamp: 4; /* Permite até 4 linhas de nomes */
+
             -webkit-box-orient: vertical;
+
             overflow: hidden;
+
             font-size: 9px;
+
             font-weight: normal;
+
             opacity: 0.85;
+
             word-wrap: break-word;
-            white-space: normal;
+
+            white-space: normal; /* Permite a quebra de linha */
+
         }
 
+
+
+        /* Cores Temáticas */
+
         .event-1m60 { background-color: #e2f7ed; color: #0d652d; border-left: 3px solid #0d652d; }
+
         .event-iag { background-color: #feefc3; color: #b05a00; border-left: 3px solid #b05a00; }
+
         .event-soar { background-color: #e8f0fe; color: #1967d2; border-left: 3px solid #1967d2; }
+
         .event-zeiss { background-color: #fce8f3; color: #a91369; border-left: 3px solid #a91369; }
+
         .event-link:hover { filter: brightness(0.92); text-decoration: none; }
+
     </style>
+
 </head>
+
 <body>
 
+
+
     <header>
+
         <div class="nav-buttons">
+
             <button onclick="changeMonth(-1)">&#10094;</button>
+
             <button onclick="changeMonth(1)">&#10095;</button>
+
         </div>
+
         <h2 id="monthDisplay">Mês Ano</h2>
+
         <div style="font-weight: bold; color: var(--google-blue);">Observações OPD / LNA</div>
+
     </header>
 
+
+
     <div class="calendar-container">
+
         <div class="calendar-header">
+
             <div class="day-label">Dom</div><div class="day-label">Seg</div><div class="day-label">Ter</div>
+
             <div class="day-label">Qua</div><div class="day-label">Qui</div><div class="day-label">Sex</div><div class="day-label">Sáb</div>
+
         </div>
+
         <div class="calendar-grid" id="calendarGrid"></div>
+
     </div>
 
+
+
     <script>
+
         // --- CONFIGURAÇÃO DE EVENTOS ---
+
         const eventos = [
-            { dia: 04, mes: 2, ano: 2026, nome: "SOAR: Ocultação", link: "observacoes/soar.html?obs=Julio, Giuliano, Eros, Jonatã, Matheus&proj=Studying small Solar System bodies through stellar occultations&PI=Julio Camargo&links=2004GV9:https://lesia.obspm.fr/lucky-star/occ.php?p=150925&Nota=A ocultação ocupa apenas 2h da noite&det=raptor", classe: "event-soar" },
-            { dia: 07, mes: 2, ano: 2026, nome: "1m60: Ocultação", link: "observacoes/1m60.html?obs=A definir&proj=Studying small Solar System bodies through stellar occultations&PI=Julio Camargo&links=1996ST1:https://solarsystem.linea.org.br/prediction-event-detail/iB10E3k8u7od8knnMsid9w&plano=plano_da_noite/plano-da-noite__2025-10-28.txt&det=sparc4", classe: "event-1m60" },
-            { dia: 07, mes: 2, ano: 2026, nome: "Zeiss: Ocultação", link: "observacoes/zeiss.html?obs=Giuliano, Jonatã, Tiago, Eros, Matheus, Julio&proj=Studying small Solar System bodies through stellar occultations&PI=Julio Camargo&det=ixon", classe: "event-zeiss" },
-            { dia: 09, mes: 3, ano: 2026, nome: "1m60: Ocultação", link: "observacoes/1m60.html?obs=Giuliano, jonatã, eros, fernanda, matheus, julio&proj=Studying small Solar System bodies through stellar occultations&PI=Julio Ignacio Bueno de Camargo&links=Bernardinelli-Bernstein:https://lesia.obspm.fr/lucky-star/occ.php?p=155276&det=sparc4", classe: "event-1m60" },
-            { dia: 10, mes: 3, ano: 2026, nome: "IAG: Rotação", link: "observacoes/iag.html?obs=Johannes&proj=Rotation photometry&PI=Johannes Antunes&alvos=Odysseus&det=ikonl", classe: "event-iag" },
-            { dia: 11, mes: 3, ano: 2026, nome: "IAG: Rotação", link: "observacoes/iag.html?obs=Johannes&proj=Rotation photometry&PI=Johannes Antunes&alvos=Odysseus&det=ikonl", classe: "event-iag" },
-            { dia: 22, mes: 3, ano: 2026, nome: "IAG: Rotação", link: "observacoes/iag.html?obs=Helio&proj=Rotation curves&PI=Helio Honório&alvos=Diomedes&det=ikonl", classe: "event-iag" },
-            { dia: 30, mes: 3, ano: 2026, nome: "SOAR: Ocultação", link: "observacoes/soar.html?obs=Julio&proj=Studying small Solar System bodies&PI=Julio Camargo&links=Orcus:https://lesia.obspm.fr/lucky-star/occ.php?p=157033", classe: "event-soar" }
+
+            // Fevereiro/Março (Mês 2)
+
+            { 
+
+              dia: 04, mes: 2, ano: 2026, 
+
+              nome: "SOAR: Ocultação",   
+
+              link: "observacoes/soar.html?obs=Julio, Giuliano, Eros, Jonatã, Matheus&proj=Studying small Solar System bodies through stellar occultations&PI=Julio Camargo&links=2004GV9:https://lesia.obspm.fr/lucky-star/occ.php?p=150925&Nota=A ocultação ocupa apenas 2h da noite&det=raptor", 
+
+              classe: "event-soar" 
+
+            },
+
+            { 
+
+              dia: 07, mes: 2, ano: 2026, 
+
+              nome: "1m60: Ocultação",   
+
+              link: "observacoes/1m60.html?obs=A definir&proj=Studying small Solar System bodies through stellar occultations&PI=Julio Camargo&links=1996ST1:https://solarsystem.linea.org.br/prediction-event-detail/iB10E3k8u7od8knnMsid9w&plano=plano_da_noite/plano-da-noite__2025-10-28.txt&det=sparc4", 
+
+              classe: "event-1m60" 
+
+            },   
+
+            { 
+
+              dia: 07, mes: 2, ano: 2026, 
+
+              nome: "Zeiss: Ocultação",   
+
+              link: "observacoes/zeiss.html?obs=Giuliano, Jonatã, Tiago, Eros, Matheus, Julio&proj=Studying small Solar System bodies through stellar occultations&PI=Julio Camargo&det=ixon", 
+
+              classe: "event-zeiss" 
+
+            },  
+
+            // Abril (Mês 3)
+
+            {dia: 09,mes: 3,ano: 2026,nome: "1m60: Ocultação", link:"observacoes/1m60.html?obs=Giuliano, jonatã, eros, fernanda, matheus, julio&proj=Studying small Solar System bodies through stellar occultations&PI=Julio Ignacio Bueno de Camargo&links=Bernardinelli-Bernstein:https://lesia.obspm.fr/lucky-star/occ.php?p=155276&det=sparc4", classe: "event-1m60"},
+
+            {dia: 10,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?obs=Johannes&proj=Rotation photometry&PI=Johannes Antunes&alvos=Odysseus&det=ikonl", classe: "event-iag"},
+
+            {dia: 11,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?obs=Johannes&proj=Rotation photometry&PI=Johannes Antunes&alvos=Odysseus&det=ikonl", classe: "event-iag"},
+
+            {dia: 22,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?obs=Helio&proj=Rotation curves&PI=Helio Honório&alvos=Diomedes&det=ikonl", classe: "event-iag"},
+
+            {dia: 30,mes: 3,ano: 2026,nome: "SOAR: Ocultação", link:"observacoes/soar.html?obs=Julio&proj=Studying small Solar System bodies&PI=Julio Camargo&links=Orcus:https://lesia.obspm.fr/lucky-star/occ.php?p=157033", classe: "event-soar"}
+
         ];
+
+
 
         let currentDate = new Date();
 
-        // --- SISTEMA DE MEMÓRIA POR URL ---
-        
-        // Carrega o mês que está escrito na URL (se existir)
-        function loadStateFromURL() {
-            const hash = window.location.hash.replace('#', '');
-            if (hash) {
-                const [year, month] = hash.split('-');
-                if (year && month) {
-                    currentDate = new Date(parseInt(year), parseInt(month), 1);
-                }
-            }
-        }
 
-        // Salva o mês atual na URL
-        function saveStateToURL() {
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
-            window.location.hash = `${year}-${month}`;
-        }
 
         function renderCalendar() {
+
             const grid = document.getElementById('calendarGrid');
+
             const monthDisplay = document.getElementById('monthDisplay');
+
             grid.innerHTML = "";
+
             const month = currentDate.getMonth();
+
             const year = currentDate.getFullYear();
+
             
+
             monthDisplay.innerText = `${["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"][month]} ${year}`;
+
             
+
             const firstDay = new Date(year, month, 1).getDay();
+
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
+
+
+            // Espaços vazios do mês anterior
+
             for (let i = 0; i < firstDay; i++) { 
+
                 grid.appendChild(document.createElement('div')).className = 'calendar-day'; 
+
             }
+
+
 
             for (let day = 1; day <= daysInMonth; day++) {
+
                 const dayDiv = document.createElement('div');
+
                 dayDiv.className = 'calendar-day';
+
                 if(day === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear()) {
+
                     dayDiv.classList.add('today');
+
                 }
+
                 
+
                 dayDiv.innerHTML = `<div class="day-number">${day}</div>`;
+
                 
+
                 eventos.filter(e => e.dia === day && e.mes === month && e.ano === year).forEach(ev => {
+
+                    // Extração dos observadores do link
+
                     let obsList = "";
+
                     try {
+
                         const urlParams = new URLSearchParams(ev.link.split('?')[1]);
+
                         obsList = urlParams.get('obs') || "";
+
+                        // Limpa os nomes e garante que a vírgula ajude na quebra de linha
+
                         obsList = obsList.replace(/;/g, ',').replace(/,/g, ', ').trim();
+
                     } catch (e) { obsList = ""; }
 
+
+
                     const obsHTML = obsList ? `<span class="event-obs">${obsList}</span>` : "";
+
                     
+
                     dayDiv.innerHTML += `
+
                         <a href="${ev.link}" class="event-link ${ev.classe}" title="${ev.nome}: ${obsList}">
+
                             <span class="event-title">${ev.nome}</span>
+
                             ${obsHTML}
+
                         </a>`;
+
                 });
+
                 grid.appendChild(dayDiv);
+
             }
+
         }
 
-        function changeMonth(off) { 
-            currentDate.setMonth(currentDate.getMonth() + off); 
-            saveStateToURL(); // Salva na URL toda vez que mudar o mês
-            renderCalendar(); 
-        }
 
-        // EXECUÇÃO INICIAL
-        loadStateFromURL(); // Tenta ler a URL antes de desenhar
+
+        function changeMonth(off) { currentDate.setMonth(currentDate.getMonth() + off); renderCalendar(); }
+
         renderCalendar();
 
-        // Se o usuário clicar no botão "Voltar" do navegador, o calendário atualiza
-        window.onhashchange = function() {
-            loadStateFromURL();
-            renderCalendar();
-        };
-
     </script>
+
 </body>
+
 </html>
