@@ -17,6 +17,7 @@
 <body>
     <div class="card">
         <h1> Telescópio 1.6m Perkin-Elmer</h1>
+        <h3 id="exibirData">Carregando data...</h3>
         <img src="../imagens/1m60.png" alt="Telescópio 1.6m" class="telescope-img">
         <div class="info">
             <p><strong>Observadores:</strong> <span id="obs">---</span></p>
@@ -39,6 +40,18 @@
         <br><a href="../index.html" class="btn">← Voltar</a>
     </div>
     <script>
+        // Função para pegar dados da URL
+        const params = new URLSearchParams(window.location.search);
+        const dia = params.get('d');
+        const mes = params.get('m');
+        const ano = params.get('a');
+    
+        if (dia && mes && ano) {
+            // Formata para o padrão 00/00/0000
+            const dataFormatada = `${dia.padStart(2, '0')}/${mes.padStart(2, '0')}/${ano}`;
+            document.getElementById('exibirData').innerText = `Noite de: ${dataFormatada}`;
+        }
+        
         const p = new URLSearchParams(window.location.search);
         const projeto = p.get('proj') || "";
         const detector = p.get('det') || "";
