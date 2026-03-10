@@ -86,48 +86,56 @@
             document.getElementById('linkDownload').href = "../fov/sparc4-1m60.fov";
         }
 
-        const projetoNormalizado = projeto.toLowerCase();
-        if (projetoNormalizado.includes("ocultação") || projetoNormalizado.includes("occultation")) {
-            const linksString = p.get('links');
+        // --- 1. SEÇÃO DE OCULTAÇÃO ---
+        // Aparece se o nome do projeto contiver "ocultação" OU se houver o parâmetro "links"
+        const linksString = p.get('links');
+        if (projeto.includes("ocultação") || projeto.includes("occultation") || linksString) {
             if (linksString) {
                 document.getElementById('secaoOcultacao').style.display = 'block';
                 const container = document.getElementById('listaLinks');
+                container.innerHTML = ""; // Limpa antes de preencher
                 linksString.split(',').forEach(par => {
-                    const firstColon = par.indexOf(':');
-                    if(firstColon !== -1) {
+                    const idx = par.indexOf(':');
+                    if(idx !== -1) {
                         const a = document.createElement('a');
-                        a.href = par.substring(firstColon + 1).trim();
+                        a.href = par.substring(idx + 1).trim();
                         a.target = "_blank"; a.className = "btn-ocultacao";
-                        a.innerText = par.substring(0, firstColon).trim();
+                        a.innerText = par.substring(0, idx).trim();
                         container.appendChild(a);
                     }
                 });
             }
         }
-        
-        if (projetoNormalizado.includes("rotação") || projetoNormalizado.includes("rotation")) {
-            const alvosString = p.get('alvos');
+    
+        // --- 2. SEÇÃO DE ROTAÇÃO ---
+        // Aparece se o nome do projeto contiver "rotação" OU se houver o parâmetro "alvos"
+        const alvosString = p.get('alvos');
+        if (projeto.includes("rotação") || projeto.includes("rotation") || alvosString) {
             if (alvosString) {
                 document.getElementById('secaoRotação').style.display = 'block';
                 const container = document.getElementById('listaRotação');
-                alvosString.split(',').forEach((alvo, index) => {
+                container.innerHTML = "";
+                alvosString.split(',').forEach((alvo, i) => {
                     const div = document.createElement('div');
                     div.className = 'lista-item';
-                    div.innerText = `${index + 1}: ${alvo.trim()}`;
+                    div.innerText = `${i + 1}: ${alvo.trim()}`;
                     container.appendChild(div);
                 });
             }
         }
-
-        if (projetoNormalizado.includes("astrometria") || projetoNormalizado.includes("astrometry")) {
-            const camposString = p.get('campos');
+    
+        // --- 3. SEÇÃO DE ASTROMETRIA ---
+        // Aparece se o nome do projeto contiver "astrometria" OU se houver o parâmetro "campos"
+        const camposString = p.get('campos');
+        if (projeto.includes("astrometria") || projeto.includes("astrometry") || camposString) {
             if (camposString) {
                 document.getElementById('secaoAstrometria').style.display = 'block';
                 const container = document.getElementById('listaAstrometria');
-                camposString.split(',').forEach((campo, index) => {
+                container.innerHTML = "";
+                camposString.split(',').forEach((campo, i) => {
                     const div = document.createElement('div');
                     div.className = 'lista-item';
-                    div.innerText = `${index + 1}: ${campo.trim()}`;
+                    div.innerText = `${i + 1}: ${campo.trim()}`;
                     container.appendChild(div);
                 });
             }
