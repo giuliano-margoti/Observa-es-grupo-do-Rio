@@ -40,13 +40,46 @@
         
         <p><strong>Nota: </strong> <span id="Nota">---</span></p>
 
+        <div id="secaoAux" style="display:none;" class="aux-box">
+            <strong> Arquivos Auxiliares:</strong><br>
+            <span id="nomeFov" style="font-size: 14px;"></span><br>
+            <a id="linkDownload" href="#" class="btn-download" download>Baixar arquivo FOV</a>
+        </div>
+
         <br><a href="../index.html" class="btn">← Voltar</a>
     </div>
 
     <script>
         const p = new URLSearchParams(window.location.search);
-        const projeto = (p.get('proj') || "").toLowerCase();
+        const dia = p.get('d');
+        const mes = p.get('m');
+        const ano = p.get('a');
     
+        if (dia && mes && ano) {
+            const dataFormatada = `${dia.padStart(2, '0')}/${mes.padStart(2, '0')}/${ano}`;
+            document.getElementById('exibirData').innerText = `Noite de: ${dataFormatada}`;
+        }
+        
+        const projeto = p.get('proj') || "";
+        const detector = p.get('det') || "";
+        document.getElementById('obs').innerText = p.get('obs') || "---";
+        document.getElementById('proj').innerText = projeto;
+        document.getElementById('det').innerText = detector || "Não especificado";
+        document.getElementById('PI').innerText = p.get('PI') || "---";
+        document.getElementById('Nota').innerText = p.get('Nota') || "Sem notas";
+
+        if (detector) {
+            const d = detector.toLowerCase();
+            let arq = "";
+            if (d.includes("ikonl")) arq = "ikonl-iag.fov";
+            if (d.includes("ixon")) arq = "ixon-iag.fov";
+            if (arq) {
+                document.getElementById('secaoAux').style.display = 'block';
+                document.getElementById('nomeFov').innerText = "Configuração para " + detector;
+                document.getElementById('linkDownload').href = "../fov/" + arq;
+            }
+        }
+
         // --- 1. SEÇÃO DE OCULTAÇÃO ---
         // Aparece se o nome do projeto contiver "ocultação" OU se houver o parâmetro "links"
         const linksString = p.get('links');
@@ -101,18 +134,16 @@
                 });
             }
         }
+        
+        if (p.get('plano')) {
+            document.getElementById('containerPlano').style.display = 'block';
+            document.getElementById('linkPlano').href = "../" + p.get('plano');
+        }
 
-        // Preenchimento de dados básicos e Efemérides (mantido)
-        document.getElementById('obs').innerText = p.get('obs') || "---";
-        document.getElementById('proj').innerText = p.get('proj') || "---";
-        document.getElementById('det').innerText = p.get('det') || "---";
-        document.getElementById('PI').innerText = p.get('PI') || "---";
-        document.getElementById('Nota').innerText = p.get('Nota') || "---";
-
-        // --- EFEMÉRIDES UTC (SOAR) ---
+        // --- BUSCA DE EFEMÉRIDES (PICO DOS DIAS - OPD) ---
         async function buscarEfemérides() {
-            const lat = "-30.238"; 
-            const lon = "-70.733";
+            const lat = "-22.534"; 
+            const lon = "-45.582";
             
             if (!dia || !mes || !ano) return;
             const dataISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
@@ -135,7 +166,7 @@
                     document.getElementById('civil_ini').innerText = formatarUTC(d.civil_twilight_begin);
                 }
             } catch (erro) {
-                document.getElementById('dadosSolares').innerHTML = "⚠️ Erro ao carregar horários.";
+                document.getElementById('dadosSolares').innerHTML = "⚠️ Erro ao carregar horários UTC.";
             }
         }
 
