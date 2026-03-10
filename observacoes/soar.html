@@ -38,19 +38,6 @@
         .btn{display:inline-block;padding:10px 20px;background:#666;color:white;text-decoration:none;border-radius:5px}
     </style>
 </head>
-<script>
-    // Função para pegar dados da URL
-    const params = new URLSearchParams(window.location.search);
-    const dia = params.get('d');
-    const mes = params.get('m');
-    const ano = params.get('a');
-
-    if (dia && mes && ano) {
-        // Formata para o padrão 00/00/0000
-        const dataFormatada = `${dia.padStart(2, '0')}/${mes.padStart(2, '0')}/${ano}`;
-        document.getElementById('exibirData').innerText = `Noite de: ${dataFormatada}`;
-    }
-</script>
 <body>
     <div class="card">
         <h1> Telescópio SOAR 4.1m</h1>
@@ -84,6 +71,18 @@
     </div>
 
     <script>
+        // Função para pegar dados da URL
+        const params = new URLSearchParams(window.location.search);
+        const dia = params.get('d');
+        const mes = params.get('m');
+        const ano = params.get('a');
+    
+        if (dia && mes && ano) {
+            // Formata para o padrão 00/00/0000
+            const dataFormatada = `${dia.padStart(2, '0')}/${mes.padStart(2, '0')}/${ano}`;
+            document.getElementById('exibirData').innerText = `Noite de: ${dataFormatada}`;
+        }
+        
         const p = new URLSearchParams(window.location.search);
         const projeto = p.get('proj') || "";
         const detector = p.get('det') || ""; // Pega o detector do link
