@@ -53,6 +53,11 @@
         <div id="secaoOcultacao" style="display:none; margin: 20px 0;"><h3 style="color: #1967d2;"> Ocultações </h3><div id="listaLinks"></div></div>
         <div id="secaoRotação" style="display:none; margin: 20px 0;"><h3 style="color: #1967d2;"> Rotação </h3><div id="listaRotação"></div></div>
         <div id="secaoAstrometria" style="display:none; margin: 20px 0;"><h3 style="color: #1967d2;"> Astrometria </h3><div id="listaAstrometria"></div></div>
+
+        <div id="dadosSolares" style="font-size: 0.9em; color: #555; margin-bottom: 15px;">
+            🌅 Amanhecer Civil: <span id="civil">...</span> | 
+            ⚓ Náutico: <span id="nautico">...</span>
+        </div>
         
         <p><strong>Nota: </strong> <span id="Nota">---</span></p>
 
@@ -162,6 +167,44 @@
             document.getElementById('containerPlano').style.display = 'block';
             document.getElementById('linkPlano').href = "../" + plano;
         }
+        
+        async function buscarAmanhecer() {
+            // Coordenadas aproximadas do SOAR (Cerro Pachón)
+            const lat = "-30.238";
+            const lon = "-70.733";
+            
+            // Pegamos a data que já extraímos da URL (dia, mes, ano)
+            if (!dia || !mes || !ano) return;
+        
+            const dataISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+        
+            try {
+                // Usando uma API gratuita de nascer do sol
+                const resp = await fetch(`https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&date=${dataISO}&formatted=0`);
+                const data = await resp.json();
+        
+                if (data.status === "OK") {
+                    const d = data.results;
+                    
+                    // Função para formatar a hora (converte UTC para local ou apenas corta a string)
+                    const formatarHora = (isoStr) => {
+                        const date = new Date(isoStr);
+                        // Ajuste para o fuso do Chile (geralmente UTC-3 ou UTC-4)
+                        // Aqui formatamos para a hora local do navegador do usuário
+                        return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                    };
+        
+                    document.getElementById('civil').innerText = formatarHora(d.civil_twilight_begin);
+                    document.getElementById('nautico').innerText = formatarHora(d.nautical_twilight_begin);
+                }
+            } catch (erro) {
+                console.error("Erro ao buscar dados solares:", erro);
+                document.getElementById('dadosSolares').innerText = "Erro ao carregar efemérides.";
+            }
+        }
+        
+        // Chama a função
+        buscarAmanhecer();
     </script>
 </body>
 </html>
