@@ -161,7 +161,7 @@
                     const obsHTML = obsList ? `<span class="event-obs">${obsList}</span>` : "";
                     
                     dayDiv.innerHTML += `
-                        <a href="${ev.link}" class="event-link ${ev.classe}" title="${ev.nome}: ${obsList}">
+                        <a href="${ev.link}&d=${day}&m=${month + 1}&a=${year}" class="event-link ${ev.classe}" title="${ev.nome}: ${obsList}">
                             <span class="event-title">${ev.nome}</span>
                             ${obsHTML}
                         </a>`;
