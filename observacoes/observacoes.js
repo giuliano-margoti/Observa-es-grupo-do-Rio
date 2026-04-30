@@ -26,7 +26,7 @@
             {dia: 25,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?obs=Christian, Luana, Jacqueline&proj=Rotation light curves of the Jupiter's Trojan asteroid Diomedes, Nestor and Antilochus&PI=Helio Honório Dutra&alvos=Diomedes,Nestor,Antilochus&det=ikonl&plano=plano_da_noite/2026A/plano_da_noite__2026-04-25.txt", classe: "event-iag"},
             {dia: 26,mes: 3,ano: 2026,nome: "IAG: Rotação", link:"observacoes/iag.html?obs=Helio, Giovana, Evelyn&proj=Rotation light curves of the Jupiter's Trojan asteroid Diomedes, Nestor and Antilochus&PI=Helio Honório Dutra&alvos=Diomedes,Nestor,Antilochus&det=ikonl&plano=plano_da_noite/2026A/plano_da_noite__2026-04-26.txt", classe: "event-iag"},
             
-            {dia: 30,mes: 3,ano: 2026,nome: "SOAR: Ocultação", link:"observacoes/soar.html?obs=Julio, Giuliano&proj=Studying small Solar System bodies through stellar occultations&PI=Julio Ignacio Bueno de Camargo&links=Orcus:https://lesia.obspm.fr/lucky-star/occ.php?p=157033", classe: "event-soar"},
+            {dia: 30,mes: 3,ano: 2026,nome: "SOAR: Ocultação", link:"observacoes/soar.html?obs=Julio, Giuliano&proj=Studying small Solar System bodies through stellar occultations&PI=Julio Ignacio Bueno de Camargo&alvos=21601 Aias (1998 XO89)&links=Orcus:https://lesia.obspm.fr/lucky-star/occ.php?p=157033", classe: "event-soar"},
             // Maio (Mês 4)
             {dia: 09,mes: 4,ano: 2026,nome: "ON: Ocultação", link:"observacoes/on.html?obs=Giuliano Margoti&proj=Observações de ocultações no Observatório Nacional&PI=Eros de Oliveira Gradovski&links=2004EW95:https://lesia.obspm.fr/lucky-star/occ.php?p=150797&det=qhy", classe: "event-on"},
             
