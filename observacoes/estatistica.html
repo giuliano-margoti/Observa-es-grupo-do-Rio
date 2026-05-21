@@ -210,7 +210,7 @@
                     <td><strong>${nome}</strong></td>
                     <td>${d.noites}</td>
                     <td>${pct}%</td>
-                    <td>${d.trab.toFixed(2)}h</td>
+                    <td>${d.trab.toFixed(1)}</td>
                 </tr>`;
                 tbodyObs.insertAdjacentHTML('beforeend', tr);
             });
@@ -221,10 +221,10 @@
                 let d = dadosPorObservatorio[local];
                 let tr = `<tr>
                     <td><strong>${local}</strong></td>
-                    <td>${d.trab.toFixed(2)}h</td>
-                    <td>${d.obs.toFixed(2)}h</td>
-                    <td>${d.clima.toFixed(2)}h</td>
-                    <td>${d.tec.toFixed(2)}h</td>
+                    <td>${d.trab.toFixed(1)}</td>
+                    <td>${d.obs.toFixed(1)}</td>
+                    <td>${d.clima.toFixed(1)}</td>
+                    <td>${d.tec.toFixed(1)}</td>
                 </tr>`;
                 tbodyLocais.insertAdjacentHTML('beforeend', tr);
             });
@@ -235,10 +235,10 @@
                 let tr = `<tr>
                     <td>${d.obsName}</td>
                     <td><strong>${d.tel}</strong></td>
-                    <td>${d.trab.toFixed(2)}h</td>
-                    <td>${d.obs.toFixed(2)}h</td>
-                    <td>${d.clima.toFixed(2)}h</td>
-                    <td>${d.tec.toFixed(2)}h</td>
+                    <td>${d.trab.toFixed(1)}</td>
+                    <td>${d.obs.toFixed(1)}</td>
+                    <td>${d.clima.toFixed(1)}</td>
+                    <td>${d.tec.toFixed(1)}</td>
                 </tr>`;
                 tbodyTels.insertAdjacentHTML('beforeend', tr);
             });
@@ -246,7 +246,7 @@
             // Esconde o loading e mostra o painel contínuo
             document.getElementById('loading').style.display = 'none';
             document.getElementById('painelContainer').style.display = 'block';
-            document.getElementById('statusText').innerHTML = `<span style="color: #2e7d32;">✅ Tabelas calculadas e atualizadas com sucesso às ${new Date().toLocaleTimeString()}</span>`;
+            document.getElementById('statusText').innerHTML = `<span style="color: #2e7d32;">Tabelas atualizadas com sucesso às ${new Date().toLocaleTimeString()}</span>`;
 
             // Ativa o DataTables em todas as tabelas com a classe 'tabela-dinamica'
             $('.tabela-dinamica').DataTable({
@@ -262,7 +262,7 @@
             skipEmptyLines: true,
             complete: function(results) { processarDados(results); },
             error: function() {
-                document.getElementById('loading').innerText = "Erro ao carregar os dados. Verifique a sua conexão.";
+                document.getElementById('loading').innerText = "Erro ao carregar os dados.";
             }
         });
     </script>
