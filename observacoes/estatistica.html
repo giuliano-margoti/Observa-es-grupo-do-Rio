@@ -18,7 +18,7 @@
         #loading { text-align: center; font-size: 1.2em; color: #0d652d; font-weight: bold; margin: 40px 0; }
         .painel-continuo { display: none; } /* Escondido até os dados carregarem */
         th { text-align: center !important; vertical-align: middle; background-color: #f8f9fa !important; }
-        td { text-align: center; vertical-align: middle; }
+        td { text-align: center; vertical-align: middle; color: black; } /* Garantindo cor preta padrão */
     </style>
 </head>
 <body>
@@ -94,7 +94,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
     <script>
-        // O link mágico da API de visualização do Google
+        // Utilizando o link de exportação escolhido
         const csvUrl = 'https://docs.google.com/spreadsheets/d/18yTaoaf6_dCcZSkHdUFVnreF_GjT5cZoShkpxbcfPG8/export?format=csv';
 
         // Termos que devem ser ignorados na coluna de telescópios
@@ -215,7 +215,7 @@
                 tbodyObs.insertAdjacentHTML('beforeend', tr);
             });
 
-            // Renderizar Tabela 2: Observatórios
+            // Renderizar Tabela 2: Observatórios (Sem formatação de cor)
             const tbodyLocais = document.getElementById('corpoObservatorios');
             Object.keys(dadosPorObservatorio).forEach(local => {
                 let d = dadosPorObservatorio[local];
@@ -223,13 +223,13 @@
                     <td><strong>${local}</strong></td>
                     <td>${d.trab.toFixed(2)}h</td>
                     <td>${d.obs.toFixed(2)}h</td>
-                    <td class="text-danger">${d.clima.toFixed(2)}h</td>
-                    <td class="text-warning">${d.tec.toFixed(2)}h</td>
+                    <td>${d.clima.toFixed(2)}h</td>
+                    <td>${d.tec.toFixed(2)}h</td>
                 </tr>`;
                 tbodyLocais.insertAdjacentHTML('beforeend', tr);
             });
 
-            // Renderizar Tabela 3: Telescópios
+            // Renderizar Tabela 3: Telescópios (Sem formatação de cor)
             const tbodyTels = document.getElementById('corpoTelescopios');
             Object.values(dadosPorTelescopio).forEach(d => {
                 let tr = `<tr>
@@ -237,8 +237,8 @@
                     <td><strong>${d.tel}</strong></td>
                     <td>${d.trab.toFixed(2)}h</td>
                     <td>${d.obs.toFixed(2)}h</td>
-                    <td class="text-danger">${d.clima.toFixed(2)}h</td>
-                    <td class="text-warning">${d.tec.toFixed(2)}h</td>
+                    <td>${d.clima.toFixed(2)}h</td>
+                    <td>${d.tec.toFixed(2)}h</td>
                 </tr>`;
                 tbodyTels.insertAdjacentHTML('beforeend', tr);
             });
