@@ -12,10 +12,11 @@
         body { font-family: sans-serif; background: #f7fbf9; padding: 20px; }
         .card { max-width: 1200px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 8px solid #0d652d; }
         h2 { color: #0d652d; font-weight: bold; }
+        h3 { color: #1b3022; font-weight: bold; border-bottom: 2px solid #e2f7ed; padding-bottom: 10px; margin-top: 40px; margin-bottom: 20px; }
         .info-box { background: #e2f7ed; padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid #c8e6c9; }
         .badge-live { background-color: #2e7d32; color: white; padding: 5px 10px; border-radius: 5px; font-size: 0.85rem; font-weight: bold; }
         #loading { text-align: center; font-size: 1.2em; color: #0d652d; font-weight: bold; margin: 40px 0; }
-        .table-responsive { display: none; } /* Escondido até os dados carregarem */
+        .painel-continuo { display: none; } /* Escondido até os dados carregarem */
         th { text-align: center !important; vertical-align: middle; background-color: #f8f9fa !important; }
         td { text-align: center; vertical-align: middle; }
     </style>
@@ -24,7 +25,7 @@
 
     <div class="card">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2>🔭 Participação da Equipe - Semestre 2026A</h2>
+            <h2>🔭 Estatísticas de Observação - Semestre 2026A</h2>
             <span class="badge-live">● Sincronização Direta do Drive</span>
         </div>
         
@@ -32,24 +33,58 @@
             <strong>Status:</strong> <span id="statusText">Aguardando conexão com o Google Sheets...</span>
         </div>
 
-        <div id="loading">A ler ficheiro CSV em tempo real e a processar horas... ⏳</div>
+        <div id="loading">A ler ficheiro CSV em tempo real e a calcular estatísticas... ⏳</div>
 
-        <div class="table-responsive" id="tabelaContainer">
-            <table class="table table-striped table-hover table-bordered" id="tabelaObservadores">
-                <thead>
-                    <tr>
-                        <th>Observador</th>
-                        <th>Noites Participadas</th>
-                        <th>Percentagem (%)</th>
-                        <th>Horas Trabalhadas</th>
-                        <th>Horas Observadas</th>
-                        <th>Perdidas (Clima)</th>
-                        <th>Perdidas (Técnico)</th>
-                    </tr>
-                </thead>
-                <tbody id="corpoTabela">
-                    </tbody>
-            </table>
+        <div class="painel-continuo" id="painelContainer">
+            
+            <h3>1. Participação da Equipe</h3>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover table-bordered tabela-dinamica" id="tabelaObservadores">
+                    <thead>
+                        <tr>
+                            <th>Observador</th>
+                            <th>Noites Participadas</th>
+                            <th>Percentagem (%)</th>
+                            <th>Horas Trabalhadas</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoObservadores"></tbody>
+                </table>
+            </div>
+
+            <h3>2. Utilização por Observatório</h3>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover table-bordered tabela-dinamica" id="tabelaObservatorios">
+                    <thead>
+                        <tr>
+                            <th>Observatório</th>
+                            <th>Horas Trabalhadas</th>
+                            <th>Horas Observadas</th>
+                            <th>Perdidas (Clima)</th>
+                            <th>Perdidas (Técnico)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoObservatorios"></tbody>
+                </table>
+            </div>
+
+            <h3>3. Estatística por Telescópio</h3>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover table-bordered tabela-dinamica" id="tabelaTelescopios">
+                    <thead>
+                        <tr>
+                            <th>Observatório</th>
+                            <th>Telescópio</th>
+                            <th>Horas Trabalhadas</th>
+                            <th>Horas Observadas</th>
+                            <th>Perdidas (Clima)</th>
+                            <th>Perdidas (Técnico)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoTelescopios"></tbody>
+                </table>
+            </div>
+
         </div>
     </div>
 
@@ -59,21 +94,20 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
     <script>
-        // O link exportado direto do seu Google Drive
-        const csvUrl = 'https://docs.google.com/spreadsheets/d/18yTaoaf6_dCcZSkHdUFVnreF_GjT5cZoShkpxbcfPG8/export?format=csv';
+        // O link mágico da API de visualização do Google
+        const csvUrl = 'https://docs.google.com/spreadsheets/d/18yTaoaf6_dCcZSkHdUFVnreF_GjT5cZoShkpxbcfPG8/gviz/tq?tqx=out:csv';
 
-        // 1. Função equivalente ao Python para extrair horas e minutos do texto
+        // Termos que devem ser ignorados na coluna de telescópios
+        const termosCiencia = ['rotação', 'astrometria', 'polarimetria', 'ocultação', 'sem observação'];
+
         function extrairTempoEmHoras(val) {
             if (!val) return 0.0;
             let strVal = String(val).toLowerCase().trim();
             let total = 0.0;
-            
             let matchH = strVal.match(/([\d\.]+)\s*(?:h|hora|horas)/);
             if (matchH) total += parseFloat(matchH[1]);
-            
             let matchM = strVal.match(/([\d\.]+)\s*(?:m|min|minuto|minutos)/);
             if (matchM) total += parseFloat(matchM[1]) / 60.0;
-            
             if (total === 0.0) {
                 let matchGen = strVal.match(/^([\d\.]+)$/);
                 if (matchGen) total += parseFloat(matchGen[1]);
@@ -81,113 +115,154 @@
             return total;
         }
 
-        // 2. Função Principal que processa os dados após o download
         function processarDados(dadosCSV) {
             const linhas = dadosCSV.data;
             const cabecalhos = dadosCSV.meta.fields;
             
-            // Identificar colunas importantes dinamicamente
-            const colsObservadores = cabecalhos.filter(h => h.includes('Observadores'));
-            const colsTrab = cabecalhos.filter(h => h.includes('Horas trabalhadas'));
-            const colsObs = cabecalhos.filter(h => h.includes('Horas observadas'));
-            const colsClima = cabecalhos.filter(h => h.includes('Horas perdidas pelo clima'));
-            const colsTecnico = cabecalhos.filter(h => h.includes('Horas perdidas pelo técnico'));
+            const colsObservadores = cabecalhos.filter(h => h && h.includes('Observadores'));
+            const colsTrab = cabecalhos.filter(h => h && h.includes('Horas trabalhadas'));
+            const colsObs = cabecalhos.filter(h => h && h.includes('Horas observadas'));
+            const colsClima = cabecalhos.filter(h => h && h.includes('Horas perdidas pelo clima'));
+            const colsTecnico = cabecalhos.filter(h => h && h.includes('Horas perdidas pelo técnico'));
+            const colsTelescopio = cabecalhos.filter(h => h && h.includes('Telescópio'));
 
             let dadosPorObservador = {};
+            let dadosPorObservatorio = {};
+            let dadosPorTelescopio = {};
             let totalNoitesGeral = 0;
 
-            // Varrendo cada linha (noite) do CSV
             linhas.forEach(linha => {
-                let observadoresDaNoite = [];
-                
-                // Pega os observadores da linha
-                colsObservadores.forEach(col => {
-                    let val = linha[col];
-                    if (val && val.trim() !== '') {
-                        val.split(',').forEach(nome => observadoresDaNoite.push(nome.trim()));
-                    }
-                });
+                let obsName = linha['Observatório'];
+                if (!obsName || obsName.trim() === '') return;
+                obsName = obsName.trim();
 
-                // Remove duplicatas
-                observadoresDaNoite = [...new Set(observadoresDaNoite)];
-                
-                if (observadoresDaNoite.length === 0) return; // Pula linhas vazias
-
-                totalNoitesGeral++;
-
-                // Calcula os tempos para esta noite
+                // 1. Cálculos de Tempo
                 let tempoTrab = 0, tempoObs = 0, tempoClima = 0, tempoTec = 0;
                 colsTrab.forEach(col => tempoTrab += extrairTempoEmHoras(linha[col]));
                 colsObs.forEach(col => tempoObs += extrairTempoEmHoras(linha[col]));
                 colsClima.forEach(col => tempoClima += extrairTempoEmHoras(linha[col]));
                 colsTecnico.forEach(col => tempoTec += extrairTempoEmHoras(linha[col]));
 
-                // Distribui as estatísticas para os observadores da noite
-                observadoresDaNoite.forEach(obs => {
-                    if (!dadosPorObservador[obs]) {
-                        dadosPorObservador[obs] = { noites: 0, trab: 0, obs: 0, clima: 0, tec: 0 };
+                // 2. Tabela 1: Observadores
+                let observadoresDaNoite = [];
+                colsObservadores.forEach(col => {
+                    let val = linha[col];
+                    if (val && val.trim() !== '') {
+                        val.split(',').forEach(nome => observadoresDaNoite.push(nome.trim()));
                     }
-                    dadosPorObservador[obs].noites += 1;
-                    dadosPorObservador[obs].trab += tempoTrab;
-                    dadosPorObservador[obs].obs += tempoObs;
-                    dadosPorObservador[obs].clima += tempoClima;
-                    dadosPorObservador[obs].tec += tempoTec;
+                });
+                observadoresDaNoite = [...new Set(observadoresDaNoite)];
+                
+                if (observadoresDaNoite.length > 0) {
+                    totalNoitesGeral++;
+                    observadoresDaNoite.forEach(obs => {
+                        if (!dadosPorObservador[obs]) dadosPorObservador[obs] = { noites: 0, trab: 0 };
+                        dadosPorObservador[obs].noites += 1;
+                        dadosPorObservador[obs].trab += tempoTrab;
+                    });
+                }
+
+                // 3. Tabela 2: Observatórios
+                if (!dadosPorObservatorio[obsName]) {
+                    dadosPorObservatorio[obsName] = { trab: 0, obs: 0, clima: 0, tec: 0 };
+                }
+                dadosPorObservatorio[obsName].trab += tempoTrab;
+                dadosPorObservatorio[obsName].obs += tempoObs;
+                dadosPorObservatorio[obsName].clima += tempoClima;
+                dadosPorObservatorio[obsName].tec += tempoTec;
+
+                // 4. Tabela 3: Telescópios
+                let telsUsados = [];
+                colsTelescopio.forEach(col => {
+                    let val = linha[col];
+                    if (val && val.trim() !== '') {
+                        val.split(',').forEach(t => {
+                            let tLimpo = t.trim();
+                            if (!termosCiencia.includes(tLimpo.toLowerCase())) {
+                                telsUsados.push(tLimpo);
+                            }
+                        });
+                    }
+                });
+                telsUsados = [...new Set(telsUsados)];
+                if (telsUsados.length === 0) {
+                    telsUsados = (obsName.toUpperCase() === 'SOAR') ? ['SOAR 4.1m'] : ['Não informado'];
+                }
+
+                telsUsados.forEach(tel => {
+                    let chave = `${obsName}|||${tel}`;
+                    if (!dadosPorTelescopio[chave]) {
+                        dadosPorTelescopio[chave] = { obsName: obsName, tel: tel, trab: 0, obs: 0, clima: 0, tec: 0 };
+                    }
+                    dadosPorTelescopio[chave].trab += tempoTrab;
+                    dadosPorTelescopio[chave].obs += tempoObs;
+                    dadosPorTelescopio[chave].clima += tempoClima;
+                    dadosPorTelescopio[chave].tec += tempoTec;
                 });
             });
 
-            // Converte o objeto para um array e calcula as percentagens
-            let listaFinal = Object.keys(dadosPorObservador).map(nome => {
+            // Renderizar Tabela 1: Observadores (Apenas Noites, % e Horas Trab)
+            const tbodyObs = document.getElementById('corpoObservadores');
+            Object.keys(dadosPorObservador).forEach(nome => {
                 let d = dadosPorObservador[nome];
-                return {
-                    nome: nome,
-                    noites: d.noites,
-                    pct: ((d.noites / totalNoitesGeral) * 100).toFixed(2),
-                    trab: d.trab.toFixed(2),
-                    obs: d.obs.toFixed(2),
-                    clima: d.clima.toFixed(2),
-                    tec: d.tec.toFixed(2)
-                };
+                let pct = ((d.noites / totalNoitesGeral) * 100).toFixed(2);
+                let tr = `<tr>
+                    <td><strong>${nome}</strong></td>
+                    <td>${d.noites}</td>
+                    <td>${pct}%</td>
+                    <td>${d.trab.toFixed(2)}h</td>
+                </tr>`;
+                tbodyObs.insertAdjacentHTML('beforeend', tr);
             });
 
-            // 3. Renderizar o HTML na tabela
-            const tbody = document.getElementById('corpoTabela');
-            listaFinal.forEach(item => {
-                let tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><strong>${item.nome}</strong></td>
-                    <td>${item.noites}</td>
-                    <td>${item.pct}%</td>
-                    <td>${item.trab}h</td>
-                    <td>${item.obs}h</td>
-                    <td class="text-danger">${item.clima}h</td>
-                    <td class="text-warning">${item.tec}h</td>
-                `;
-                tbody.appendChild(tr);
+            // Renderizar Tabela 2: Observatórios
+            const tbodyLocais = document.getElementById('corpoObservatorios');
+            Object.keys(dadosPorObservatorio).forEach(local => {
+                let d = dadosPorObservatorio[local];
+                let tr = `<tr>
+                    <td><strong>${local}</strong></td>
+                    <td>${d.trab.toFixed(2)}h</td>
+                    <td>${d.obs.toFixed(2)}h</td>
+                    <td class="text-danger">${d.clima.toFixed(2)}h</td>
+                    <td class="text-warning">${d.tec.toFixed(2)}h</td>
+                </tr>`;
+                tbodyLocais.insertAdjacentHTML('beforeend', tr);
             });
 
-            // Esconde o loading e mostra a tabela
+            // Renderizar Tabela 3: Telescópios
+            const tbodyTels = document.getElementById('corpoTelescopios');
+            Object.values(dadosPorTelescopio).forEach(d => {
+                let tr = `<tr>
+                    <td>${d.obsName}</td>
+                    <td><strong>${d.tel}</strong></td>
+                    <td>${d.trab.toFixed(2)}h</td>
+                    <td>${d.obs.toFixed(2)}h</td>
+                    <td class="text-danger">${d.clima.toFixed(2)}h</td>
+                    <td class="text-warning">${d.tec.toFixed(2)}h</td>
+                </tr>`;
+                tbodyTels.insertAdjacentHTML('beforeend', tr);
+            });
+
+            // Esconde o loading e mostra o painel contínuo
             document.getElementById('loading').style.display = 'none';
-            document.getElementById('tabelaContainer').style.display = 'block';
-            document.getElementById('statusText').innerHTML = `<span style="color: #2e7d32;">✅ Tabela atualizada com sucesso às ${new Date().toLocaleTimeString()}</span>`;
+            document.getElementById('painelContainer').style.display = 'block';
+            document.getElementById('statusText').innerHTML = `<span style="color: #2e7d32;">✅ Tabelas calculadas e atualizadas com sucesso às ${new Date().toLocaleTimeString()}</span>`;
 
-            // Ativa o DataTables (Filtros e Ordenação)
-            $('#tabelaObservadores').DataTable({
+            // Ativa o DataTables em todas as tabelas com a classe 'tabela-dinamica'
+            $('.tabela-dinamica').DataTable({
                 "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-PT.json" },
-                "order": [[ 1, "desc" ]] // Ordena pelas noites decrescente
+                "order": [[ 1, "desc" ]] // Ordena inicialmente pela segunda coluna de forma decrescente
             });
         }
 
-        // 4. Iniciar a Busca do CSV via PapaParse
+        // Inicia o download e processamento
         Papa.parse(csvUrl, {
-            download: true,       // Diz para o PapaParse ir buscar o arquivo no link
-            header: true,         // O CSV tem cabeçalho
-            skipEmptyLines: true, // Ignora as linhas em branco do fim da folha
-            complete: function(results) {
-                // Quando o download terminar, passa os dados para a nossa função
-                processarDados(results);
-            },
-            error: function(err) {
-                document.getElementById('loading').innerText = "Erro ao carregar os dados. Verifique a permissão do Google Drive.";
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) { processarDados(results); },
+            error: function() {
+                document.getElementById('loading').innerText = "Erro ao carregar os dados. Verifique a sua conexão.";
             }
         });
     </script>
