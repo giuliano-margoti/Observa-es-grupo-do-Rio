@@ -94,10 +94,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
     <script>
-        // Utilizando o link de exportação escolhido
         const csvUrl = 'https://docs.google.com/spreadsheets/d/18yTaoaf6_dCcZSkHdUFVnreF_GjT5cZoShkpxbcfPG8/export?format=csv';
 
-        // Termos que devem ser ignorados na coluna de telescópios
         const termosCiencia = ['rotação', 'astrometria', 'polarimetria', 'ocultação', 'sem observação'];
 
         function extrairTempoEmHoras(val) {
@@ -136,14 +134,12 @@
                 if (!obsName || obsName.trim() === '') return;
                 obsName = obsName.trim();
 
-                // 1. Cálculos de Tempo
                 let tempoTrab = 0, tempoObs = 0, tempoClima = 0, tempoTec = 0;
                 colsTrab.forEach(col => tempoTrab += extrairTempoEmHoras(linha[col]));
                 colsObs.forEach(col => tempoObs += extrairTempoEmHoras(linha[col]));
                 colsClima.forEach(col => tempoClima += extrairTempoEmHoras(linha[col]));
                 colsTecnico.forEach(col => tempoTec += extrairTempoEmHoras(linha[col]));
 
-                // 2. Tabela 1: Observadores
                 let observadoresDaNoite = [];
                 colsObservadores.forEach(col => {
                     let val = linha[col];
@@ -162,7 +158,6 @@
                     });
                 }
 
-                // 3. Tabela 2: Observatórios
                 if (!dadosPorObservatorio[obsName]) {
                     dadosPorObservatorio[obsName] = { trab: 0, obs: 0, clima: 0, tec: 0 };
                 }
@@ -171,7 +166,6 @@
                 dadosPorObservatorio[obsName].clima += tempoClima;
                 dadosPorObservatorio[obsName].tec += tempoTec;
 
-                // 4. Tabela 3: Telescópios
                 let telsUsados = [];
                 colsTelescopio.forEach(col => {
                     let val = linha[col];
@@ -201,7 +195,6 @@
                 });
             });
 
-            // Renderizar Tabela 1: Observadores (Apenas Noites, % e Horas Trab)
             const tbodyObs = document.getElementById('corpoObservadores');
             Object.keys(dadosPorObservador).forEach(nome => {
                 let d = dadosPorObservador[nome];
@@ -215,7 +208,6 @@
                 tbodyObs.insertAdjacentHTML('beforeend', tr);
             });
 
-            // Renderizar Tabela 2: Observatórios (Sem formatação de cor)
             const tbodyLocais = document.getElementById('corpoObservatorios');
             Object.keys(dadosPorObservatorio).forEach(local => {
                 let d = dadosPorObservatorio[local];
@@ -229,7 +221,6 @@
                 tbodyLocais.insertAdjacentHTML('beforeend', tr);
             });
 
-            // Renderizar Tabela 3: Telescópios (Sem formatação de cor)
             const tbodyTels = document.getElementById('corpoTelescopios');
             Object.values(dadosPorTelescopio).forEach(d => {
                 let tr = `<tr>
@@ -243,19 +234,16 @@
                 tbodyTels.insertAdjacentHTML('beforeend', tr);
             });
 
-            // Esconde o loading e mostra o painel contínuo
             document.getElementById('loading').style.display = 'none';
             document.getElementById('painelContainer').style.display = 'block';
             document.getElementById('statusText').innerHTML = `<span style="color: #2e7d32;">Tabelas atualizadas com sucesso às ${new Date().toLocaleTimeString()}</span>`;
 
-            // Ativa o DataTables em todas as tabelas com a classe 'tabela-dinamica'
             $('.tabela-dinamica').DataTable({
                 "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-PT.json" },
-                "order": [[ 1, "desc" ]] // Ordena inicialmente pela segunda coluna de forma decrescente
+                "order": [[ 1, "desc" ]] 
             });
         }
 
-        // Inicia o download e processamento
         Papa.parse(csvUrl, {
             download: true,
             header: true,
